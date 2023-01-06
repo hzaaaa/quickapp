@@ -1,0 +1,17 @@
+/* 全局 css 变量 */
+@import url("element-ui.scss");
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+#app {
+  width: 100%;
+  height: 100%;
+}
+p {
+  margin: 0;
+}
