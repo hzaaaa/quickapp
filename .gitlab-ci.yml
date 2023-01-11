@@ -1,0 +1,27 @@
+stages:
+    - build
+    - test
+    - deploy
+
+job1:
+    stage: test
+    tags:
+        - java-cvm01
+    script:
+        - pwd
+        - echo "I am job1"
+        - echo "I am in test stage"
+
+job2:
+    stage: build
+    tags:
+        - java-cvm01
+    script:
+        - pwd
+        
+job3:
+    stage: deploy
+    tags:
+        - java-cvm01
+    script:
+        - id
