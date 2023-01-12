@@ -28,8 +28,8 @@ export default defineConfig(({ mode }) => {
       open: viteEnv.VITE_OPEN,
       proxy: {
         "/api": {
-          target: "http://172.16.1.44:35021/api/system/",
-          rewrite: (path) => path.replace(/^\/api/, ""),
+          target: "http://172.16.1.44:888/usercenter",
+          rewrite: (path) => path.replace(/\/api/, ""),
         },
       },
     },
