@@ -2,7 +2,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 // global css
-import "@/assets/styles/index.scss";
+import "@/assets/style/index.scss";
 import router from "@/router/index";
 import pinia from "@/store/index";
 
