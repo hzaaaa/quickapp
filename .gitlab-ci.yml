@@ -11,17 +11,10 @@ job1:
         - pwd
         - ls -la
         - npm install --registry=http://maven-repo.weiyankeji.cn/repository/npm-group/
-        - ls -l
-
-job2:
-    stage: build
-    tags:
-        - java-cvm01
-    script:
-        - ls -l
         - npm run build:pro
+        -ls -la
         
-job3:
+job2:
     stage: deploy
     tags:
         - java-cvm01
