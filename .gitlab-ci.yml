@@ -12,7 +12,7 @@ job1:
         - ls -la
         - npm install --registry=http://maven-repo.weiyankeji.cn/repository/npm-group/
         - npm run build:pro
-        -ls -la
+        - ls -la
         
 job2:
     stage: deploy
