@@ -1,23 +1,25 @@
 stages:
     - build
-    - test
+    - install
     - deploy
 
 job1:
-    stage: test
+    stage: install
     tags:
         - java-cvm01
     script:
         - pwd
-        - echo "I am job1"
-        - echo "I am in test stage"
+        - ls -l
+        - npm install --registry=http://maven-repo.weiyankeji.cn/repository/npm-group/
+        - ls -l
 
 job2:
     stage: build
     tags:
         - java-cvm01
     script:
-        - pwd
+        - ls -l
+        - npm run build:pro
         
 job3:
     stage: deploy
