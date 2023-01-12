@@ -10,7 +10,7 @@ job1:
     script:
         - pwd
         - ls -l
-        - npm install --registry=http://maven-repo.weiyankeji.cn/repository/npm-group/
+        - npm install
         - ls -l
 
 job2:
