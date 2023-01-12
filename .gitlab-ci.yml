@@ -9,8 +9,8 @@ job1:
         - java-cvm01
     script:
         - pwd
-        - ls -l
-        - npm install
+        - ls -la
+        - npm install --registry=http://maven-repo.weiyankeji.cn/repository/npm-group/
         - ls -l
 
 job2:
