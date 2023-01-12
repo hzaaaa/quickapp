@@ -1,0 +1,22 @@
+stages:
+    - install
+    - build
+    - deploy
+
+job1:
+    stage: install
+    tags:
+        - java-cvm01
+    script:
+        - pwd
+        - ls -la
+        - npm install --registry=http://maven-repo.weiyankeji.cn/repository/npm-group/
+        - npm run build:pro
+        - ls -la
+        
+job2:
+    stage: deploy
+    tags:
+        - java-cvm01
+    script:
+        - id
