@@ -1,7 +1,7 @@
 <template>
   <div class="login" :style="'background-image: url(' + Background + ')'">
     <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="login-form-title" @click="test">广告素材后台</h3>
+      <h3 class="login-form-title">广告素材后台</h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" placeholder="账号" :prefix-icon="User"></el-input>
       </el-form-item>
@@ -22,22 +22,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
-import { useRouter } from "vue-router";
+import { ref, reactive, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { FormInstance } from "element-plus";
 import Background from "@/assets/images/background.webp";
 import { User, Lock } from "@element-plus/icons-vue";
-import { login } from "@/api/login/login";
+import { loginApi } from "@/api/login/login";
 // import { User, Lock, Checked } from "@element-plus/icons-vue";
-// import { captcha, login } from "@/api/login/login";
+// import { captcha, loginApi } from "@/api/login/login";
 import { useGlobalStore } from "@/store/index";
 import { useAuthStore } from "@/store/auth";
 import { initDynamicRouter } from "@/router/dynamicRouter";
 
-const test = () => {
-  console.log(router);
-};
 const router = useRouter();
+const route = useRoute();
 const globalStore = useGlobalStore();
 const authStore = useAuthStore();
 
@@ -91,36 +89,46 @@ const submitLoginForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(async (valid) => {
     if (valid) {
-      login({ ...loginForm })
+      // 1. 执行登录接口
+      loginApi({ ...loginForm })
         .then(async (res) => {
+          // 2. 存储用户信息
           globalStore.setToken(res.data.token);
-          // globalStore.setUsername(res.data.userInfoVo.sysUser.username);
-          // globalStore.setRole(res.data.userInfoVo.sysRoleList[0].name);
-          // globalStore.setDept(res.data.userInfoVo.deptTreeVoList[0].name);
-          authStore.setAuthMenuList(res.data.userInfoVo.menuVoList);
+          globalStore.setUsername(res.data.userInfoVo.sysUser.username);
+          globalStore.setRole(res.data.userInfoVo.sysRoleList[0].name);
+          globalStore.setDept(res.data.userInfoVo.deptTreeVoList[0].name);
+          authStore.setOriginAuthMenuList(res.data.userInfoVo.menuVoList);
+
+          // 3. 获取按钮权限
           authStore.getAuthButtonList();
-          console.log("show", authStore.showMenuListGet);
+
+          // 4. 添加动态路由
           await initDynamicRouter();
-          // console.log("d", d);
-          // d.forEach((i: any) => {
-          //   router.addRoute(i);
-          // });
-          console.log("login router", router.options.routes);
-          console.log("router get", router.getRoutes());
-          router.push("/report");
+
+          // 5.跳转页面，如果没有 redirect 跳转到默认页，如果有就携带参数跳转到 redirect
+          if (!route.query?.redirect) router.push("/report");
+          else router.push({ path: route.query?.redirect as string, query: JSON.parse(route.query?.params as string) });
         })
         .catch((err) => {
-          console.log("login 接口错误", err);
+          console.log("loginApi 接口错误", err);
         });
-      // router.push("/info");
     } else {
       return false;
     }
   });
 };
+onMounted(() => {
+  // 监听 enter 按键事件登录
+  document.onkeydown = (e: any) => {
+    e = window.event || e;
+    if (e.code === "Enter" || e.code === "enter" || e.code === "NumpadEnter") {
+      submitLoginForm(loginFormRef.value);
+    }
+  };
+});
 
 const loginPage = reactive({
-  copyright: "Copyright © 2022 Weiyankeji. All rights reserved.",
+  copyright: "Copyright © 2023 Weiyankeji. All rights reserved.",
 });
 </script>
 

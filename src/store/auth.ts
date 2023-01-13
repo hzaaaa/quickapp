@@ -6,20 +6,24 @@ import { getAuthButtonListApi } from "@/api/login/login";
 export const useAuthStore = defineStore({
   id: "AuthState",
   state: () => ({
-    // 菜单列表 作为动态路由
-    authMenuList: <Menu.MenuOptions[]>[],
+    // 原始菜单列表 后端返回
+    authOriginMenuList: <Menu.MenuOptions[]>[],
+    // 处理后的动态路由，不做持久化存储
+    authMenuList: <any[]>[],
     // 按钮权限列表
     authButtonList: <string[]>[],
   }),
   getters: {
+    // 后端返回的原始菜单列表
+    authOriginMenuListGet: (state) => state.authOriginMenuList,
+    // 后端返回的菜单列表 => 左侧菜单栏渲染，去除 hidden == 1 和 type > 5
+    showMenuListGet: (state) => getShowMenuList(state.authOriginMenuList),
+    // 后端返回的菜单列表 => 生成处理前的动态路由，去除 type > 5
+    routerMenuListGet: (state) => getRouterMenuList(state.authOriginMenuList),
+    // 处理后的动态路由
+    authMenuListGet: (state) => state.authMenuList,
     // 按钮权限列表
     authButtonListGet: (state) => state.authButtonList,
-    // 后端返回的菜单列表
-    authMenuListGet: (state) => state.authMenuList,
-    // 后端返回的菜单列表 => 左侧菜单栏渲染，去除 hidden == 1 和 type > 5
-    showMenuListGet: (state) => getShowMenuList(state.authMenuList),
-    // 后端返回的菜单列表 => 生成动态路由，去除 type > 5
-    routerMenuListGet: (state) => getRouterMenuList(state.authMenuList),
   },
   actions: {
     // 获取按钮权限列表
@@ -29,9 +33,13 @@ export const useAuthStore = defineStore({
       this.authButtonList = data;
     },
     // 设置菜单列表
-    async setAuthMenuList(menuList: Menu.MenuOptions[]) {
+    async setOriginAuthMenuList(menuList: Menu.MenuOptions[]) {
+      this.authOriginMenuList = menuList;
+    },
+    // 设置动态路由
+    async setAuthMenuList(menuList: any) {
       this.authMenuList = menuList;
     },
   },
-  persist: { key: "AuthState", storage: window.localStorage },
+  persist: { key: "AuthState", storage: window.localStorage, paths: ["authOriginMenuList", "authButtonList"] },
 });

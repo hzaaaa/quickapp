@@ -5,10 +5,12 @@ import App from "./App.vue";
 import "@/assets/styles/index.scss";
 import router from "@/router/index";
 import pinia from "@/store/index";
+import directives from "@/directives/index";
 
 const app = createApp(App);
 
 app.use(router);
 app.use(pinia);
+app.use(directives);
 
 app.mount("#app");

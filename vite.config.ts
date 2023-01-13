@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
       open: viteEnv.VITE_OPEN,
       proxy: {
         "/api": {
-          target: "http://172.16.1.44:888/usercenter",
+          target: "http://172.16.1.44:889/creativedesk",
           rewrite: (path) => path.replace(/\/api/, ""),
         },
       },

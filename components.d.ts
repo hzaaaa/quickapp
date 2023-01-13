@@ -7,6 +7,7 @@ export {};
 
 declare module "@vue/runtime-core" {
   export interface GlobalComponents {
+    404: typeof import("./src/components/ErrorMessage/404.vue")["default"];
     ElButton: typeof import("element-plus/es")["ElButton"];
     ElDialog: typeof import("element-plus/es")["ElDialog"];
     ElDropdown: typeof import("element-plus/es")["ElDropdown"];

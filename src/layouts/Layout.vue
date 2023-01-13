@@ -42,6 +42,14 @@
 
 <script setup lang="ts">
 import avatar from "@/assets/images/avatar.png";
+import { logoutApi } from "@/api/login/login";
+import { useRoute, useRouter } from "vue-router";
+import { useGlobalStore } from "@/store";
+
+const route = useRoute();
+const router = useRouter();
+const globalStore = useGlobalStore();
+
 /**
  * 顶部信息栏-用户信息
  */
@@ -50,15 +58,17 @@ const logout = () => {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
   })
-    .then(() => {
-      console.log("退出登录");
-      // userLogout().then((res) => {
-      //   if (res.code == "0" || res.code == "444444") {
-      //     localStorage.clear();
-      //     document.cookie = "";
-      //     location.reload();
-      //   }
-      // });
+    .then(async () => {
+      // 1. 调用退出登录接口
+      await logoutApi();
+      // 2. 清除 token 等缓存
+      globalStore.setToken("");
+      localStorage.clear();
+      // document.cookie = "";
+      // 3. 重定向到登录页,并携带当前页面地址和参数
+      const path = `/login?redirect=${route.path}&params=${JSON.stringify(route.query ? route.query : route.params)}`;
+      router.replace(path);
+      ElMessage.success("退出登录成功！");
     })
     .catch(() => {});
 };

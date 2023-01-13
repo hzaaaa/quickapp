@@ -22,6 +22,9 @@
         <span class="info-content-title">所属部门</span>
         <span>{{ userInfoTemp.departmant }}</span>
       </div>
+      <div>
+        <el-button v-throttle="temp">测试节流</el-button>
+      </div>
     </div>
 
     <!-- 修改密码弹窗 -->
@@ -54,6 +57,10 @@ const userInfoTemp = ref({
   role: "管理员",
   departmant: "运营部",
 });
+
+const temp = () => {
+  console.log(123);
+};
 
 /**
  * 修改密码弹窗

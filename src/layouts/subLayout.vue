@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div>accountLayoutHead</div>
+    <div>subLayoutHead</div>
     <RouterView></RouterView>
-    <div>accountLayoutFoot</div>
+    <div>subLayoutFoot</div>
   </div>
 </template>
 

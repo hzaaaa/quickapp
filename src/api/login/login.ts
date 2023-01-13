@@ -21,7 +21,7 @@ export namespace Login {
 /**
  * @name 登录模块
  */
-export const login = (params: Login.ReqLoginForm) => {
+export const loginApi = (params: Login.ReqLoginForm) => {
   // console.warn("调用 login 接口");
   return http.post<Login.ResLogin>(`/auth/login`, params);
   return http.post<Login.ResLogin>(`/auth/login`, {}, { params }); // post 请求携带 query 参数  ==>  ?username=admin&password=123456
@@ -38,4 +38,10 @@ export const captcha = () => {
 export const getAuthButtonListApi = () => {
   // console.warn("调用获取按钮权限接口");
   return http.get<string[]>(`/menu/user/permission`);
+};
+/**
+ * @name 退出登录
+ */
+export const logoutApi = () => {
+  return http.post(`/auth/logout`);
 };
