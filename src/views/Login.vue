@@ -33,6 +33,7 @@ import { loginApi } from "@/api/login/login";
 import { useGlobalStore } from "@/store/index";
 import { useAuthStore } from "@/store/auth";
 import { initDynamicRouter } from "@/router/dynamicRouter";
+import { getFisrtRoute } from "@/utils/util";
 
 const router = useRouter();
 const route = useRoute();
@@ -106,7 +107,7 @@ const submitLoginForm = (formEl: FormInstance | undefined) => {
           await initDynamicRouter();
 
           // 5.跳转页面，如果没有 redirect 跳转到默认页，如果有就携带参数跳转到 redirect
-          if (!route.query?.redirect) router.push("/report");
+          if (!route.query?.redirect) router.push(getFisrtRoute(authStore.authMenuListGet));
           else router.push({ path: route.query?.redirect as string, query: JSON.parse(route.query?.params as string) });
         })
         .catch((err) => {

@@ -37,3 +37,15 @@ export function getRouterMenuList(menuList: Menu.MenuOptions[]) {
 //     return flatArr;
 //   }, []);
 // }
+
+/**
+ * @description 从路由列表中，找到第一个路由作为初始默认路由
+ */
+export function getFisrtRoute(routes: any): any {
+  for (let route of routes) {
+    if (route.children) return getFisrtRoute(route.children);
+    if (route.name) return { name: route.name };
+    if (route.path) return { path: route.path };
+  }
+  return null;
+}
