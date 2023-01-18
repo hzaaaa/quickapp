@@ -5,3 +5,7 @@ dist
 *.md
 .vscode
 /public
+
+
+auto-imports.d.ts
+components.d.ts

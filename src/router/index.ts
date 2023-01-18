@@ -6,6 +6,10 @@ import { useGlobalStore } from "@/store";
 
 const routes: RouteRecordRaw[] = [
   {
+    path: "/",
+    redirect: "/login",
+  },
+  {
     path: "/login",
     name: "Login",
     component: () => import("@/views/Login.vue"), // 注意这里要带上 文件后缀.vue
@@ -43,15 +47,16 @@ const blackList = ["/account"];
  * @description 前置路由守卫
  */
 router.beforeEach(async (to, from, next) => {
-  // console.log("from", from);
-  // console.log("to", to);
+  console.log("from", from);
+  console.log("to", to);
 
   const globalStore = useGlobalStore();
 
   // 1. 如果访问登录页，没有 token 直接放行，有 token 停留在当前页
   if (to.path.startsWith("/login")) {
-    if (!globalStore.token || from.path === "/") return next();
-    else return next(from.fullPath);
+    return next();
+    // if (!globalStore.token || from.path === "/") return next();
+    // else return next(from.fullPath);
   }
 
   // 2. 判断是否有 token，没有重定向到登录页
