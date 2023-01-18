@@ -19,7 +19,7 @@ export function getShowMenuList(menuList: Menu.MenuOptions[]) {
 export function getRouterMenuList(menuList: Menu.MenuOptions[]) {
   let newMenuList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(menuList));
   return newMenuList.filter((item) => {
-    item.childrenList?.length && (item.childrenList = getShowMenuList(item.childrenList));
+    item.childrenList?.length && (item.childrenList = getRouterMenuList(item.childrenList));
     return item.type <= 5;
   });
 }
@@ -42,10 +42,18 @@ export function getRouterMenuList(menuList: Menu.MenuOptions[]) {
  * @description 从路由列表中，找到第一个路由作为初始默认路由
  */
 export function getFisrtRoute(routes: any): any {
-  for (let route of routes) {
-    if (route.children) return getFisrtRoute(route.children);
-    if (route.name) return { name: route.name };
-    if (route.path) return { path: route.path };
+  if (routes instanceof Array) {
+    // 如果是路由数组
+    for (let route of routes) {
+      if (route.children) return getFisrtRoute(route.children);
+      if (route.name) return { name: route.name };
+      if (route.path) return { path: route.path };
+    }
+  } else {
+    // 如果是单个路由
+    if (routes.children) return getFisrtRoute(routes.children);
+    if (routes.name) return { name: routes.name };
+    if (routes.path) return { path: routes.path };
   }
   return null;
 }

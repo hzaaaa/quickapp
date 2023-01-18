@@ -3,24 +3,29 @@
     <!-- 顶部信息栏 -->
     <header class="header">
       <!-- 顶部信息栏-标题 -->
-      <div class="header-title">广告素材后台</div>
+      <div class="header-title" @click="temp">广告素材后台</div>
       <!-- 顶部信息栏-一级菜单 -->
       <div class="header-directory">
-        <span>素材库</span>
-        <span>报表</span>
-        <span>账户</span>
+        <div
+          v-for="(item, index) in authStore.showMenuListGet"
+          :key="item.id"
+          @click="changeMenu(item, index)"
+          :class="{ active: activeMenuPath === item.redirect }"
+        >
+          {{ item.title }}
+        </div>
       </div>
       <!-- 顶部信息栏-用户信息 -->
       <div class="header-userinfo">
         <el-dropdown>
           <span class="header-userinfo-dropdown_title">
             <img :src="avatar" alt="" />
-            <p>xx(角色)</p>
+            <p>{{ globalStore.username }}（{{ globalStore.role }}）</p>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item disabled>xx@weiyankeji.cn</el-dropdown-item>
-              <el-dropdown-item divided @click="logout">个人信息设置</el-dropdown-item>
+              <el-dropdown-item divided @click="router.push('/info')">个人信息设置</el-dropdown-item>
               <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -41,14 +46,36 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from "vue";
 import avatar from "@/assets/images/avatar.png";
 import { logoutApi } from "@/api/login/login";
 import { useRoute, useRouter } from "vue-router";
 import { useGlobalStore } from "@/store";
+import { useAuthStore } from "@/store/auth";
+import { getFisrtRoute } from "@/utils/util";
 
 const route = useRoute();
 const router = useRouter();
 const globalStore = useGlobalStore();
+const authStore = useAuthStore();
+const temp = () => {
+  console.log("routes", authStore.authMenuListGet);
+  // console.log("routerMenuListGet", authStore.routerMenuListGet);
+  console.log("showMenuListGet", authStore.showMenuListGet);
+  console.log("curRoute", route);
+};
+/**
+ * 主菜单跳转
+ */
+const activeMenuPath = ref("");
+onMounted(() => {
+  activeMenuPath.value = route.matched[0].path;
+});
+const changeMenu = (targetMenu: any, targetMenuIndex: number) => {
+  activeMenuPath.value = targetMenu.redirect;
+  let routes = authStore.authMenuListGet[targetMenuIndex];
+  router.push(getFisrtRoute(routes));
+};
 
 /**
  * 顶部信息栏-用户信息
@@ -86,13 +113,36 @@ const logout = () => {
   border-bottom: 4px #f2f2f2 solid;
   height: 60px;
   &-title {
-    margin: 0 160px 0 16px;
+    box-sizing: border-box;
+    padding-left: 16px;
+    width: 200px;
     font-size: 20px;
   }
   &-directory {
+    display: flex;
     flex: 1;
-    span {
-      margin-right: 60px;
+    padding-left: 40px;
+    div {
+      width: 120px;
+      height: 60px;
+      cursor: pointer;
+      line-height: 60px;
+      text-align: center;
+      &.active {
+        position: relative;
+        color: var(--el-color-primary);
+        &::before {
+          position: absolute;
+          left: 40px;
+          bottom: 0;
+          border-radius: 2px;
+          width: 40px;
+          height: 3px;
+          background-color: var(--el-color-primary);
+          content: "";
+          transition: all 0.5s ease-out;
+        }
+      }
     }
   }
   &-userinfo {

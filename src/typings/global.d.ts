@@ -1,6 +1,7 @@
 // 菜单
 declare namespace Menu {
   interface MenuOptions {
+    id: number;
     title: string;
     type: number;
     hidden: number;

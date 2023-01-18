@@ -1,5 +1,6 @@
 /* 全局 css 变量 */
-@import url("element-ui.scss");
+// 这里由于是scss文件，不需要加上url()将路径包裹起来，不然会失效
+@import "element-ui.scss"; // stylelint-disable-line
 html {
   height: 100%;
 }

@@ -3,10 +3,10 @@
     <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="login-form-title">广告素材后台</h3>
       <el-form-item prop="username">
-        <el-input v-model="loginForm.username" placeholder="账号" :prefix-icon="User"></el-input>
+        <el-input v-model="loginForm.username" placeholder="账号：admin" :prefix-icon="User"></el-input>
       </el-form-item>
       <el-form-item prop="password">
-        <el-input v-model="loginForm.password" placeholder="密码" type="password" :prefix-icon="Lock"></el-input>
+        <el-input v-model="loginForm.password" placeholder="密码：123456" type="password" :prefix-icon="Lock"></el-input>
       </el-form-item>
       <!-- 带验证码的登录 -->
       <!-- <el-form-item prop="code" v-if="loginForm.type === 2">
