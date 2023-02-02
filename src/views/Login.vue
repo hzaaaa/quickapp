@@ -95,10 +95,16 @@ const submitLoginForm = (formEl: FormInstance | undefined) => {
         .then(async (res) => {
           // 2. 存储用户信息
           globalStore.setToken(res.data.token);
-          globalStore.setUsername(res.data.userInfoVo.sysUser.username);
-          globalStore.setRole(res.data.userInfoVo.sysRoleList[0].name);
-          globalStore.setDept(res.data.userInfoVo.deptTreeVoList[0].name);
-          authStore.setOriginAuthMenuList(res.data.userInfoVo.menuVoList);
+          globalStore.setUsername(res.data.userInfoVo?.sysUser?.username);
+          globalStore.setRole(res.data.userInfoVo?.sysRoleList[0]?.name);
+          globalStore.setDept(res.data.userInfoVo?.deptTreeVoList[0]?.name);
+          // 如果 menuVoList 带id=1的系统设置，则所有其他菜单均为系统设置的子菜单，只存储子菜单列表
+          if (res.data.userInfoVo?.menuVoList[0].id === 1) {
+            authStore.setOriginAuthMenuList(res.data.userInfoVo?.menuVoList[0].childrenList);
+          } else {
+            // 若第一项id!==1，说明不带系统设置，已是子菜单列表，直接存储
+            authStore.setOriginAuthMenuList(res.data.userInfoVo?.menuVoList);
+          }
 
           // 3. 获取按钮权限
           authStore.getAuthButtonList();

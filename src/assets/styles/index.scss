@@ -16,3 +16,14 @@ body {
 p {
   margin: 0;
 }
+
+/* flex */
+.flx-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flx-align-center {
+  display: flex;
+  align-items: center;
+}

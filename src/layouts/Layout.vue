@@ -25,7 +25,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item disabled>xx@weiyankeji.cn</el-dropdown-item>
-              <el-dropdown-item divided @click="router.push('/info')">个人信息设置</el-dropdown-item>
+              <el-dropdown-item divided @click="jumpToInfo">个人信息设置</el-dropdown-item>
               <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -35,8 +35,8 @@
 
     <!-- 主体部分 -->
     <div class="body">
-      <!-- 主体部分-左侧导航栏 -->
-      <aside class="aside"></aside>
+      <!-- 主体部分-左侧导航栏
+      <aside class="aside"></aside> -->
       <!-- 主体部分-内容 -->
       <div class="container">
         <RouterView></RouterView>
@@ -80,6 +80,10 @@ const changeMenu = (targetMenu: any, targetMenuIndex: number) => {
 /**
  * 顶部信息栏-用户信息
  */
+const jumpToInfo = () => {
+  activeMenuPath.value = "";
+  router.push("/info");
+};
 const logout = () => {
   ElMessageBox.confirm("确认退出吗?", "提示", {
     confirmButtonText: "确定",
@@ -105,6 +109,7 @@ const logout = () => {
 .home {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
 }
 .header {
@@ -158,10 +163,15 @@ const logout = () => {
   }
 }
 .body {
+  overflow-y: auto;
   flex-grow: 1;
+  width: 100%;
   .container {
-    overflow: hidden;
-    height: 100%;
+    display: flex;
+    overflow-y: hidden;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100%;
   }
 }
 </style>
