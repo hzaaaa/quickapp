@@ -3,39 +3,46 @@
     <!-- 左侧项目列表 -->
     <aside class="aside" :class="{ narrow: isCollapse }">
       <template v-if="!isCollapse">
-        <el-button type="primary" class="aside-button" @click="showProjectDialog('create')">创建</el-button>
+        <el-button type="primary" class="aside-button" @click="testApi">创建</el-button>
+        <!-- <el-button type="primary" class="aside-button" @click="showProjectDialog('create')">创建</el-button> -->
         <el-input class="aside-input" :prefix-icon="Search" placeholder="输入项目名称搜索" v-model="searchProject"></el-input>
-        <el-menu @open="handleOpen" @close="handleClose">
-          <template v-for="indus in sidebarList" :key="indus.indusId">
-            <!-- 项目列表不为空的使用 el-sub-menu -->
-            <el-sub-menu :index="`${indus.indusId}`" v-if="indus.projectList && indus.projectList.length">
-              <template #title>
-                <el-icon><Menu /></el-icon>
-                <span>{{ indus.indusName }}</span>
-              </template>
-              <el-menu-item
-                :index="`${indus.indusId}-${project.projectId}`"
-                @click="test"
-                class="aside-item"
-                v-for="project in indus.projectList"
-                :key="project.projectId"
-              >
-                <span>{{ project.projectName }}</span>
-                <el-popover :show-arrow="false" placement="bottom-start" ref="popoverRef">
-                  <template #reference>
-                    <el-icon :size="12" class="aside-more" @click.stop="test2"><MoreFilled /></el-icon>
+        <el-row class="aside-menu">
+          <el-scrollbar>
+            <el-menu @open="handleOpen" @close="handleClose">
+              <template v-for="indus in sidebarList" :key="indus.indusId">
+                <!-- 项目列表不为空的使用 el-sub-menu -->
+                <el-sub-menu :index="`${indus.indusId}`" v-if="indus.projectList && indus.projectList.length">
+                  <template #title>
+                    <el-icon><Menu /></el-icon>
+                    <span>{{ indus.indusName }}</span>
                   </template>
-                  <div @click="showProjectDialog('modify')" class="popover-modify">修改</div>
-                </el-popover>
-              </el-menu-item>
-            </el-sub-menu>
-            <!-- 项目列表为空的使用 el-menu-item -->
-            <el-menu-item :index="`${indus.indusId}`" @click="showNoProjectPage = true" v-else>
-              <el-icon><Menu /></el-icon>
-              <span>{{ indus.indusName }}</span>
-            </el-menu-item>
-          </template>
-        </el-menu>
+                  <el-menu-item
+                    :index="`${indus.indusId}-${project.projectId}`"
+                    @click="test"
+                    class="aside-item"
+                    v-for="project in indus.projectList"
+                    :key="project.projectId"
+                  >
+                    <el-tooltip :content="project.projectName" placement="right">
+                      <span>{{ project.projectName }}</span>
+                    </el-tooltip>
+                    <el-popover :show-arrow="false" placement="bottom-start" ref="popoverRef">
+                      <template #reference>
+                        <el-icon :size="12" class="aside-more" @click.stop="test2"><MoreFilled /></el-icon>
+                      </template>
+                      <div @click="showProjectDialog('modify')" class="popover-modify">修改</div>
+                    </el-popover>
+                  </el-menu-item>
+                </el-sub-menu>
+                <!-- 项目列表为空的使用 el-menu-item -->
+                <el-menu-item :index="`${indus.indusId}`" @click="showNoProjectPage = true" v-else>
+                  <el-icon><Menu /></el-icon>
+                  <span>{{ indus.indusName }}</span>
+                </el-menu-item>
+              </template>
+            </el-menu>
+          </el-scrollbar>
+        </el-row>
       </template>
       <el-row class="aside-collapse">
         <el-icon v-if="isCollapse" @click="expandSidebar" size="large" class="pointer"><Expand /></el-icon>
@@ -366,48 +373,64 @@ import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 import { Search, Menu, MoreFilled, VideoPlay, EditPen, Expand, Fold } from "@element-plus/icons-vue";
 import { PopoverInstance } from "element-plus";
 import { getUserListApi } from "@/api/system/user";
+import { getMaterialSidebarListApi } from "@/api/biz/material";
+import { Material } from "@/api/interface";
+
+const testApi = () => {
+  console.log("testApi");
+  getMaterialSidebarListApi().then((res) => {
+    console.log("res", res);
+  });
+};
 
 /**
  * 左侧项目列表
  */
+const sidebarList = ref<Material.Indus[]>([]);
+onMounted(() => {
+  getMaterialSidebarListApi().then((res) => {
+    console.log("res", res);
+    sidebarList.value = res.data;
+  });
+});
 // 模拟数据
-const sidebarList = ref([
-  {
-    indusId: 1,
-    indusName: "教育培训",
-    indusRemark: "教育培训",
-    projectList: [
-      {
-        projectId: 1,
-        projectName: "军队文职",
-        remark: "军队文职",
-      },
-    ],
-  },
-  {
-    indusId: 3,
-    indusName: "书籍应用",
-    indusRemark: "书籍应用",
-    projectList: [
-      {
-        projectId: 5,
-        projectName: "书路阅读",
-        remark: "书路阅读",
-      },
-      {
-        projectId: 6,
-        projectName: "懒懒读书",
-        remark: "懒懒读书",
-      },
-    ],
-  },
-  {
-    indusId: 5,
-    indusName: "汽车",
-    indusRemark: "汽车",
-    projectList: [],
-  },
-]);
+// const sidebarList2 = ref([
+//   {
+//     indusId: 1,
+//     indusName: "教育培训",
+//     indusRemark: "教育培训",
+//     projectList: [
+//       {
+//         projectId: 1,
+//         projectName: "军队文职",
+//         remark: "军队文职",
+//       },
+//     ],
+//   },
+//   {
+//     indusId: 3,
+//     indusName: "书籍应用",
+//     indusRemark: "书籍应用",
+//     projectList: [
+//       {
+//         projectId: 5,
+//         projectName: "书路阅读",
+//         remark: "书路阅读",
+//       },
+//       {
+//         projectId: 6,
+//         projectName: "懒懒读书",
+//         remark: "懒懒读书",
+//       },
+//     ],
+//   },
+//   {
+//     indusId: 5,
+//     indusName: "汽车",
+//     indusRemark: "汽车",
+//     projectList: [],
+//   },
+// ]);
 const searchProject = ref(""); // 左侧项目列表，项目搜索框文字
 const popoverRef = ref<PopoverInstance>();
 const test = (aa: any) => {
@@ -867,21 +890,35 @@ const handlePathChange = (val: any) => {
   height: 100%;
   // 左侧项目列表
   .aside {
+    display: flex;
     position: relative;
+    flex-direction: column;
     flex-shrink: 0;
     box-sizing: border-box;
     padding: 20px 12px 0;
     border-right: 4px #f2f2f2 solid;
     width: 200px;
+    height: 100%;
     &-button {
       margin-bottom: 20px;
       width: 100%;
       height: 38px;
     }
+    &-menu {
+      flex: 1;
+      height: 50%;
+      .el-scrollbar {
+        width: 100%;
+      }
+    }
     &-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      span {
+        overflow: hidden;
+        max-width: 84px;
+      }
     }
     &-more {
       height: 20px;
@@ -889,11 +926,15 @@ const handlePathChange = (val: any) => {
       transform: translateX(10px) rotate(90deg);
     }
     &-collapse {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      height: 42px;
     }
     &.narrow {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
       width: 44px;
     }
   }
@@ -930,6 +971,13 @@ const handlePathChange = (val: any) => {
     }
     &-button {
       width: 100%;
+    }
+    .el-row {
+      align-items: center;
+      margin-bottom: 20px;
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 }
@@ -1127,13 +1175,6 @@ const handlePathChange = (val: any) => {
     &-right {
       padding-left: 28px;
     }
-  }
-}
-.el-row {
-  align-items: center;
-  margin-bottom: 20px;
-  &:last-child {
-    margin-bottom: 0;
   }
 }
 .el-col {

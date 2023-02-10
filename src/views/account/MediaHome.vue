@@ -1,27 +1,27 @@
 <template>
   <div class="mediaHome">
-    <el-row class="mediaHome-search">
-      <div class="mediaHome-search-label">账户名称/ID</div>
-      <el-input v-model="searchForm.accountName" class="mediaHome-search-input"></el-input>
-      <div class="mediaHome-search-label">公司名称</div>
-      <el-input v-model="searchForm.companyName" class="mediaHome-search-input"></el-input>
-      <el-button @click="search"></el-button>
+    <el-row class="filter">
+      <div class="filter-label">账户名称/ID</div>
+      <el-input v-model="searchForm.accountName" class="filter-input"></el-input>
+      <div class="filter-label">公司名称</div>
+      <el-input v-model="searchForm.companyName" class="filter-input"></el-input>
+      <el-button type="primary" @click="search">查询</el-button>
     </el-row>
     <el-button plain type="primary" @click="jumpToMediaAdd">添加账户</el-button>
-    <el-table :data="mockTableDataList">
+    <el-table :data="mockTableDataList" class="table" :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
       <el-table-column label="账户ID" prop="accountId"></el-table-column>
       <el-table-column label="广告投放账户名称" prop="accountName"></el-table-column>
       <el-table-column label="公司名称" prop="companyName"></el-table-column>
-      <el-table-column label="授权状态" prop="state"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="授权状态" prop="state" width="80px"></el-table-column>
+      <el-table-column label="操作" width="80px">
         <template #default="scope">
           <el-button link type="primary" @click="handleAuthorization(scope.row)">操作</el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="synchronizedSwitch">
+      <el-table-column prop="synchronizedSwitch" width="100px">
         <template #header>
           <span>同步素材</span>
-          <el-tooltip content="开启后，每天早上9点后开始同步前1天账户中创建的素材" :show-arrow="false">
+          <el-tooltip effect="light" :show-arrow="false" content="开启后，每天早上9点后开始同步前1天账户中创建的素材">
             <el-icon size="small"><Warning /></el-icon>
           </el-tooltip>
         </template>
@@ -62,15 +62,20 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
 import { EditPen, Warning } from "@element-plus/icons-vue";
+import { useRoute, useRouter } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
 const searchForm = reactive({
   accountName: "",
   companyName: "",
 });
 const search = () => {
-  console.log("search");
+  console.log("search", route.path);
 };
 const jumpToMediaAdd = () => {
   console.log("jumpToMediaAdd");
+  router.push(`${route.path}_add`);
 };
 
 /**
@@ -158,4 +163,30 @@ const handlePathChange = (val: any) => {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// 页面整体布局
+.mediaHome {
+  font-size: 14px;
+}
+.filter {
+  &-label {
+    margin-right: 8px;
+  }
+  &-input {
+    margin-right: 12px;
+    width: auto;
+  }
+}
+.table {
+  margin-top: 8px;
+  border-radius: 4px 4px 0 0;
+  font-size: 12px;
+}
+.el-row {
+  align-items: center;
+  height: 48px;
+  // & :deep(.el-input__wrapper) {
+  //   flex-grow: 0;
+  // }
+}
+</style>

@@ -1,23 +1,6 @@
 import http from "@/api";
-import { PORTAuth } from "../config/servicePort";
-// * 登录模块 interface
-export namespace Login {
-  export interface ReqLoginForm {
-    username: string;
-    password: string;
-    type: number;
-    captchaId?: string;
-    code?: string;
-  }
-  export interface ResLogin {
-    token: string;
-    [key: string]: any;
-  }
-  export interface ResCaptcha {
-    captchaId: string;
-    img: string;
-  }
-}
+import { PORTAuth } from "@/api/config/servicePort";
+import { Login } from "@/api/interface";
 
 /**
  * @name 登录模块

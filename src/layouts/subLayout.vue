@@ -25,8 +25,6 @@
       </el-row>
     </div>
     <div class="subLayout-contain">
-      <el-button @click="temp">测试</el-button>
-
       <RouterView></RouterView>
     </div>
   </div>
@@ -35,18 +33,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Expand, Fold } from "@element-plus/icons-vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useAuthStore } from "@/store/auth";
 
-const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-const temp = () => {
-  console.log("routes", authStore.authMenuListGet);
-  // console.log("routerMenuListGet", authStore.routerMenuListGet);
-  console.log("showMenuListGet", authStore.showMenuListGet);
-  console.log("curRoute", route);
-};
+// const temp = () => {
+//   console.log("authMenuListGet", authStore.authMenuListGet);
+//   console.log("showMenuListGet", authStore.showMenuListGet);
+//   console.log("routerMenuListGet", authStore.routerMenuListGet);
+// };
 
 /**
  * 左侧列表

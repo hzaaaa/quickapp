@@ -2,23 +2,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError, AxiosResponse } from "axios";
 import { useGlobalStore } from "@/store";
 import router from "@/router";
-
-// * 请求响应参数(不包含data)
-export interface Result {
-  code: string;
-  msg: string;
-}
-// * 请求响应参数(包含data)
-export interface ResultData<T> extends Result {
-  data: T;
-}
-export enum ResultEnum {
-  SUCCESS = 200,
-  ERROR = 500,
-  OVERDUE = 599,
-  TIMEOUT = 10000,
-  TYPE = "success",
-}
+import { ResultData, ResultEnum } from "./interface";
 
 const config = {
   // 默认地址请求地址，可在 .env 开头文件中修改

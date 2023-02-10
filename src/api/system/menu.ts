@@ -24,9 +24,9 @@ export const getMenuInfoApi = (params: any) => {
  * @name 获取菜单树 tree
  * @param menuId 必须，菜单id，number
  */
-export const getMenuTreeApi = (params: any) => {
+export const getMenuTreeApi = (params: { menuId: number }) => {
   // console.warn("获取菜单树");
-  return http.get(PORTAuth + `/menu/tree?${qs.stringify(params)}`);
+  return http.get<any>(PORTAuth + `/menu/tree?${qs.stringify(params)}`);
 };
 
 /**

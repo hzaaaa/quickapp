@@ -91,3 +91,21 @@ export const postUserPasswordUpdateApi = (params: any) => {
 export const postUserPasswordResetApi = (params: any) => {
   return http.post(PORTAuth + `/user/password/reset`, params);
 };
+
+/**
+ * @name 获取指定部门人员列表 list
+ * @param deptId 必须，部门id，number
+ * @param enabled 非必须，是否启用，number
+ * @param userName 非必须，用户昵称支持模糊查询
+ */
+export const postGetUserListByFormApi = (params: any) => {
+  return http.post<any>(PORTAuth + `/user/management/getUserListByForm`, params);
+};
+
+/**
+ * @name 获取带角色信息的用户列表 list
+ */
+export const getRoleUserListApi = () => {
+  // console.warn("获取用户列表");
+  return http.get<any>(PORTAuth + `/user/management/getRoleList`);
+};

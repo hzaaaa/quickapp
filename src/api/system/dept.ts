@@ -22,11 +22,11 @@ export const getDeptInfoApi = (params?: any) => {
 
 /**
  * @name 获取部门树 tree
- * @param id 非必须，根据 id 查询部门树
+ * @param id 非必须，部门id，根据 id 查询部门树
  */
 export const getDeptTreeApi = (params?: any) => {
   // console.warn("获取部门树");
-  return http.get(PORTAuth + `/dept/tree?${qs.stringify(params)}`);
+  return http.get<any>(PORTAuth + `/dept/tree?${qs.stringify(params)}`);
 };
 
 /**

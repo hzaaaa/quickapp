@@ -171,7 +171,7 @@ const logout = () => {
     overflow-y: hidden;
     flex-direction: column;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
   }
 }
 </style>

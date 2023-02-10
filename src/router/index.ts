@@ -47,8 +47,8 @@ const blackList = ["/account"];
  * @description 前置路由守卫
  */
 router.beforeEach(async (to, from, next) => {
-  console.log("from", from);
-  console.log("to", to);
+  // console.log("from", from);
+  // console.log("to", to);
 
   const globalStore = useGlobalStore();
 
