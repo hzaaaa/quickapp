@@ -2,7 +2,7 @@
   <div class="userModify">
     <el-container>
       <el-header>
-        <el-icon><ArrowLeft /></el-icon>
+        <el-icon class="back-icon pointer" @click="back"><ArrowLeft /></el-icon>
         <span> {{ accountStore.behaviorGet === "add" ? "添加" : "修改" }}人员 </span>
       </el-header>
       <el-main>
@@ -25,8 +25,8 @@
               placeholder="长度须大于6位数，同时包含数字、字母"
             ></el-input>
           </el-form-item>
-          <el-form-item label="角色" prop="roleList">
-            <el-checkbox-group v-model="userForm.roleList">
+          <el-form-item label="角色" prop="roleIdList">
+            <el-checkbox-group v-model="userForm.roleIdList">
               <el-checkbox :label="role.id" v-for="role in OptionalRoleList" :key="role.id">{{ role.name }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
@@ -51,15 +51,18 @@ import { ArrowLeft } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
 import { getRoleListApi } from "@/api/system/role";
 import { getDeptTreeApi } from "@/api/system/dept";
+import { postCreateUserApi, postUpdateUserApi } from "@/api/system/user";
 import { FormInstance, FormRules } from "element-plus";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const userFormRef = ref<FormInstance>();
 const userForm = reactive({
   userName: "",
   nickName: "",
   email: "",
   password: "",
-  roleList: <number[]>[],
+  roleIdList: <number[]>[],
   deptId: <null | number>null,
 });
 const OptionalRoleList = ref<any>([]);
@@ -105,7 +108,7 @@ const userFormRules = reactive<FormRules>({
   nickName: [{ validator: validateNickName, trigger: "blur" }],
   email: [{ validator: validateEmail, trigger: "blur" }],
   password: [{ validator: validatePass, trigger: "blur" }],
-  roleList: [{ validator: validateRole, trigger: "change" }],
+  roleIdList: [{ validator: validateRole, trigger: "change" }],
   deptId: [{ validator: validateDept, trigger: "change" }],
 });
 
@@ -121,17 +124,44 @@ getDeptTreeApi().then((res) => {
 const accountStore = useAccountStore();
 const cancleModifyUser = () => {
   console.log("cancleModifyUser", userForm);
+  router.back();
 };
 const saveModifyUser = async (formEl: FormInstance | undefined) => {
   console.log("saveModifyUser", formEl);
-  if (!formEl) return;
-  await formEl.validate((valid, fields) => {
-    if (valid) {
-      console.log("submit");
-    } else {
-      console.log("error", fields);
-    }
-  });
+  if (accountStore.behavior !== "modify") {
+    // 添加人员
+    if (!formEl) return;
+    await formEl.validate((valid, fields) => {
+      if (valid) {
+        console.log("submit", userForm);
+        postCreateUserApi(userForm).then((res) => {
+          console.log("postCreateUserApi", res);
+          if (res.code === 200) ElMessage.success("创建成功");
+        });
+      } else {
+        console.log("error", fields);
+      }
+    });
+  } else {
+    // 修改人员
+    if (!formEl) return;
+    await formEl.validate((valid, fields) => {
+      if (valid) {
+        let updateUserParams = {
+          ...userForm,
+          userId: accountStore.userInfoGet.userId,
+          enabled: accountStore.userInfoGet.enabled,
+        };
+        // console.log("submit", userForm);
+        postUpdateUserApi(updateUserParams).then((res) => {
+          // console.log("postUpdateUserApi", res);
+          if (res.code === 200) ElMessage.success("修改成功");
+        });
+      } else {
+        console.log("error", fields);
+      }
+    });
+  }
 };
 
 onMounted(() => {
@@ -140,14 +170,29 @@ onMounted(() => {
     if (userName) userForm.userName = userName;
     if (nickName) userForm.nickName = nickName;
     if (email) userForm.email = email;
-    if (roleList) userForm.roleList = roleList.map((role) => role.roleId);
+    if (roleList) userForm.roleIdList = roleList.map((role) => role.roleId);
     if (deptId) userForm.deptId = deptId;
   }
 });
+
+const back = () => {
+  console.log("back");
+  router.back();
+};
 </script>
 
 <style scoped lang="scss">
+.userModify {
+  font-size: 14px;
+}
 .el-header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 12px;
   border-bottom: 1px solid #f2f2f2;
+  height: 48px;
+}
+.back-icon {
+  margin-right: 8px;
 }
 </style>

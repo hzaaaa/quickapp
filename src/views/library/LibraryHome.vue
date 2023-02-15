@@ -195,6 +195,9 @@
     <!-- 创建、修改项目弹窗 -->
     <el-dialog v-model="projectDialogVisible" :title="projectDialogTitle" width="60%">
       <el-form :model="projectForm" label-width="100px" label-position="left">
+        <el-form-item label="项目负责人">
+          <div>xx</div>
+        </el-form-item>
         <el-form-item label="项目名称">
           <el-input v-model="projectForm.name" maxlength="20" :show-word-limit="true" />
         </el-form-item>
@@ -353,7 +356,7 @@
     </el-drawer>
 
     <!-- 存储路径级联表单 -->
-    <el-dialog v-model="pathDialogVisible" :show-close="false" class="pathDialog">
+    <el-dialog v-model="pathDialogVisible" :show-close="false" class="pathDialog libPathDialog">
       <div class="pathDialog-title">
         <div class="pathDialog-title-left">行业分类</div>
         <div class="pathDialog-title-right">项目名称</div>
@@ -1196,7 +1199,7 @@ const handlePathChange = (val: any) => {
 </style>
 <style lang="scss">
 // 不加 scoped, 用于覆盖 element-plus 样式
-.pathDialog {
+.libPathDialog {
   .el-dialog__header {
     padding: 0;
   }

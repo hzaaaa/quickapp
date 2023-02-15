@@ -3,12 +3,16 @@
     <div class="info-title">个人信息</div>
     <div class="info-content">
       <div>
-        <span class="info-content-title">用户名</span>
-        <span>{{ userInfoTemp.username }}</span>
+        <span class="info-content-title">用户账号</span>
+        <span>{{ globalStore.username }}</span>
+      </div>
+      <div>
+        <span class="info-content-title">姓名</span>
+        <span>{{ globalStore.nickname }}</span>
       </div>
       <div>
         <span class="info-content-title">邮箱号码</span>
-        <span>{{ userInfoTemp.email }}</span>
+        <span>{{ globalStore.email }}</span>
       </div>
       <div>
         <span class="info-content-title">密码</span>
@@ -16,15 +20,15 @@
       </div>
       <div>
         <span class="info-content-title">角色</span>
-        <span>{{ userInfoTemp.role }}</span>
+        <span>{{ globalStore.role }}</span>
       </div>
       <div>
         <span class="info-content-title">所属部门</span>
-        <span>{{ userInfoTemp.departmant }}</span>
+        <span>{{ globalStore.dept }}</span>
       </div>
-      <div>
+      <!-- <div>
         <el-button v-throttle="temp">测试节流</el-button>
-      </div>
+      </div> -->
     </div>
 
     <!-- 修改密码弹窗 -->
@@ -51,16 +55,14 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
 import { FormInstance } from "element-plus";
-const userInfoTemp = ref({
-  username: "张三",
-  email: "zhangsan@weiyankeji.cn",
-  role: "管理员",
-  departmant: "运营部",
-});
+import { useGlobalStore } from "@/store";
+import { postUserPasswordUpdateApi } from "@/api/system/user";
+import { logoutApi } from "@/api/login/login";
+import { useRoute, useRouter } from "vue-router";
 
-const temp = () => {
-  console.log(123);
-};
+const route = useRoute();
+const router = useRouter();
+const globalStore = useGlobalStore();
 
 /**
  * 修改密码弹窗
@@ -106,25 +108,30 @@ const submitPwdForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(async (valid) => {
     if (valid) {
-      isPwdFormVisible.value = false;
-      ElMessage.success({ message: "密码已修改，请重新登录" });
-      // let reqData: Password.ReqPasswordForm = {
-      //   password: pwdForm.pwd_old,
-      //   newPassword: pwdForm.pwd_new,
-      // };
-      // if (isFirstLogin.value) {
-      //   reqData.firstLogin = true;
-      // }
-      // password(reqData)
-      //   .then((res) => {
-      //     if (res.code == "0") {
-      //       isPwdFormVisible.value = false;
-      //       ElMessage({ message: "密码已修改，请重新登录！", type: "success", showClose: true });
-      //     }
-      //   })
-      //   .catch((err) => {
-      //     console.error("password 接口 error=>", err);
-      //   });
+      let params = {
+        oldPassword: pwdForm.pwd_old,
+        newPassword: pwdForm.pwd_new,
+      };
+      postUserPasswordUpdateApi(params)
+        .then(async (res) => {
+          if (res.code === 200) {
+            isPwdFormVisible.value = false;
+            ElMessage.success({ message: "密码已修改，请重新登录" });
+            // 1. 调用退出登录接口
+            await logoutApi();
+            // 2. 清除 token 等缓存
+            globalStore.setToken("");
+            localStorage.clear();
+            // document.cookie = "";
+            // 3. 重定向到登录页,并携带当前页面地址和参数
+            const path = `/login?redirect=${route.path}&params=${JSON.stringify(route.query ? route.query : route.params)}`;
+            router.replace(path);
+          }
+          console.log("postUserPasswordUpdateApi", res);
+        })
+        .catch((err) => {
+          console.error("postUserPasswordUpdateApi 接口 error =>", err);
+        });
     } else {
       return false;
     }

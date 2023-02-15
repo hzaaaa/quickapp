@@ -213,7 +213,7 @@
   </el-drawer>
 
   <!-- 存储路径级联表单 -->
-  <el-dialog v-model="pathDialogVisible" :show-close="false" class="pathDialog">
+  <el-dialog v-model="pathDialogVisible" :show-close="false" class="pathDialog reportPathDialog">
     <div class="pathDialog-title">
       <div class="pathDialog-title-left">行业分类</div>
       <div class="pathDialog-title-right">项目名称</div>

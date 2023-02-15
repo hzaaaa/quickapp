@@ -38,8 +38,10 @@ import { getMenuTreeApi } from "@/api/system/menu";
 import { getRoleMenuDetailsByRoleId } from "@/api/biz/account";
 import { onMounted, ref } from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import router from "@/router";
-import { postUserAddApi } from "@/api/system/user";
+import { postRoleUpdateApi } from "@/api/system/role";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const treeRef = ref<any>();
 const accountStore = useAccountStore();
@@ -62,22 +64,20 @@ onMounted(async () => {
   });
 });
 const save = () => {
-  console.log("getCheckedKeys", treeRef.value.getCheckedKeys(false));
-  console.log("getHalfCheckedKeys", treeRef.value.getHalfCheckedKeys());
-  let userParams = {
-    username: "front",
-    phone: "15511112222",
-    password: "123456",
-    deptId: 8,
-    nickName: "前端开发管理员",
-    email: "front@qq.com",
-    gender: 1,
-    enable: 1,
-    roleIdList: [10],
+  // console.log("getCheckedKeys", treeRef.value.getCheckedKeys(false));
+  // console.log("getHalfCheckedKeys", treeRef.value.getHalfCheckedKeys());
+  // console.log("modifyRoleId", accountStore.modifyRoleId);
+  let roleUpdateParams = {
+    id: accountStore.modifyRoleId,
+    menuIdList: treeRef.value.getCheckedKeys(false).concat(treeRef.value.getHalfCheckedKeys()),
   };
-  postUserAddApi(userParams).then((res) => {
-    console.log("postUserAddApi", res);
+  postRoleUpdateApi(roleUpdateParams).then((res) => {
+    console.log("postRoleUpdateApi", res);
+    if (res.code === 200) {
+      ElMessage.success("编辑成功！");
+    }
   });
+  // console.log("roleParams, ", roleUpdateParams);
 };
 const back = () => {
   console.log("back");

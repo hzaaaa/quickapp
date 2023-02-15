@@ -15,6 +15,7 @@ export const useAccountStore = defineStore({
       email: "",
       roleList: <any[]>[],
       deptId: -1,
+      enabled: -1,
     },
     // 修改角色权限时的角色 id
     modifyRoleId: -1,

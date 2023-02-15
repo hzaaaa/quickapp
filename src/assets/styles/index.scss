@@ -19,6 +19,9 @@ p {
 .pointer {
   cursor: pointer;
 }
+.primary-color {
+  color: var(--el-color-primary);
+}
 
 /* flex */
 .flx-center {

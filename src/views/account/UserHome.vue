@@ -2,7 +2,7 @@
   <div class="userHome">
     <el-container>
       <el-aside width="240px">
-        <el-menu class="dept-menu">
+        <el-menu class="dept-menu" :default-openeds="[`${tempCompanyDeptId}`]">
           <template v-for="dept in deptTree" :key="dept.id">
             <!-- 项目列表不为空的使用 el-sub-menu -->
             <el-sub-menu :index="`${dept.id}`" v-if="dept.childrenList && dept.childrenList.length" class="dept-menu-sub">
@@ -11,7 +11,7 @@
               </template>
               <el-menu-item
                 :index="`${subDept.id}`"
-                @click="test"
+                @click="changeDept"
                 class="aside-item"
                 v-for="subDept in dept.childrenList"
                 :key="subDept.id"
@@ -20,7 +20,7 @@
               </el-menu-item>
             </el-sub-menu>
             <!-- 项目列表为空的使用 el-menu-item -->
-            <el-menu-item :index="`${dept.id}`" @click="test" v-else>
+            <el-menu-item :index="`${dept.id}`" @click="changeDept" v-else>
               <span>{{ dept.name }}</span>
             </el-menu-item>
           </template>
@@ -33,8 +33,8 @@
             <el-option label="启用" :value="1"></el-option>
             <el-option label="停用" :value="0"></el-option>
           </el-select>
-          <div class="filter-label">用户账号</div>
-          <el-input v-model="searchForm.companyName" class="filter-input"></el-input>
+          <div class="filter-label">姓名</div>
+          <el-input v-model="searchForm.userName" class="filter-input" clearable></el-input>
           <el-button type="primary" @click="search">查询</el-button>
         </el-row>
         <el-button plain type="primary" @click="jumpToAddUser">添加人员</el-button>
@@ -50,31 +50,34 @@
             </el-table-column>
             <el-table-column label="状态" width="80px">
               <template #default="scope">
+                <div v-if="scope.row.roleList.map((r: any) => r.roleId).includes(tempAdminRoleId)">--</div>
                 <el-switch
                   v-model="scope.row.enabled"
                   :active-value="1"
                   :inactive-value="0"
-                  @change="changeEnabled"
+                  @change="changeEnabled(scope.row)"
                   size="small"
+                  v-else
                 ></el-switch>
               </template>
             </el-table-column>
             <el-table-column label="所属部门" prop="deptName"> </el-table-column>
             <el-table-column label="操作">
               <template #default="scope">
-                <div @click="jumpToModifyUser(scope.row)" class="pointer">
+                <div @click="jumpToModifyUser(scope.row)" class="pointer primary-color">
                   <span>修改</span>
                 </div>
               </template>
             </el-table-column>
             <el-table-column label="媒体账户">
               <template #default="scope">
-                <div @click="jumpToAssignUser(scope.row)" class="pointer">
-                  <span>分配</span>
-                </div>
-                <div @click="jumpToPeekUser(scope.row)" class="pointer">
-                  <span>查看</span>
-                </div>
+                <div v-if="scope.row.roleList.map((r: any) => r.roleId).includes(tempAdminRoleId)">--</div>
+                <template v-else>
+                  <div class="table-button">
+                    <span @click="jumpToAssignUser(scope.row)" class="pointer primary-color">分配</span>
+                    <span @click="jumpToPeekUser(scope.row)" class="pointer primary-color">查看</span>
+                  </div>
+                </template>
               </template>
             </el-table-column>
           </el-table>
@@ -86,7 +89,7 @@
 
 <script setup lang="ts">
 import { getDeptTreeApi } from "@/api/system/dept";
-import { postGetUserListByFormApi } from "@/api/system/user";
+import { postGetUserListByFormApi, postUpdateUserApi } from "@/api/system/user";
 import { useAccountStore } from "@/store/account";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -109,11 +112,14 @@ postGetUserListByFormApi({ deptId: tempCompanyDeptId }).then((res) => {
   tableDataList.value = res.data.filter((u: any) => u.roleList.find((r: any) => r.roleId === tempAdminRoleId));
 });
 
-const test = (a: any) => {
-  console.log("test", a.index);
-  postGetUserListByFormApi({ deptId: a.index }).then((res) => {
+const changeDept = (dept: any) => {
+  console.log("deptId", dept.index);
+  postGetUserListByFormApi({ deptId: dept.index }).then((res) => {
     console.log("res", res.data);
     tableDataList.value = res.data;
+    searchForm.deptId = dept.index;
+    searchForm.enabled = 1;
+    searchForm.userName = "";
   });
 };
 
@@ -121,11 +127,15 @@ const test = (a: any) => {
  * 搜索区
  */
 const searchForm = reactive({
+  deptId: tempCompanyDeptId,
   enabled: 1,
-  companyName: "",
+  userName: "",
 });
 const search = () => {
-  console.log("search");
+  console.log("search", searchForm);
+  postGetUserListByFormApi(searchForm).then((res) => {
+    tableDataList.value = res.data;
+  });
 };
 const jumpToAddUser = () => {
   console.log("jumpToAddUser");
@@ -146,13 +156,43 @@ const jumpToModifyUser = (row: any) => {
 const jumpToAssignUser = (row: any) => {
   console.log("jumpToAssignUser", row);
   router.push("/account/user_assign");
+  accountStore.setUserInfo(row);
 };
 const jumpToPeekUser = (row: any) => {
   console.log("jumpToAssignUser", row);
   router.push("/account/user_peek");
+  accountStore.setUserInfo(row);
 };
-const changeEnabled = (a: any) => {
-  console.log("changeEnabled", a);
+const changeEnabled = (row: any) => {
+  // @change="(checked: boolean) => changeEnabled(checked, scope.row)"
+  console.log("changeEnabled", row);
+  ElMessageBox.confirm(`此操作将${row.enabled === 0 ? "禁用" : "激活"} ${row.nickName}，是否继续`, "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(() => {
+      // console.log("changeEnabled", row);
+      let params = {
+        userId: row.userId,
+        enabled: row.enabled,
+        nickName: row.nickName,
+        email: row.email,
+        deptId: row.deptId,
+        roleIdList: row.roleList.map((r: any) => r.roleId),
+      };
+      // console.log("params", params);
+      postUpdateUserApi(params).then((res) => {
+        console.log("postUpdateUserApi", res);
+      });
+    })
+    .catch(() => {
+      if (row.enabled === 0) {
+        row.enabled = 1;
+      } else {
+        row.enabled = 0;
+      }
+    });
 };
 </script>
 
@@ -188,5 +228,10 @@ const changeEnabled = (a: any) => {
   margin-top: 8px;
   border-radius: 4px 4px 0 0;
   font-size: 12px;
+  &-button {
+    span {
+      margin-right: 8px;
+    }
+  }
 }
 </style>

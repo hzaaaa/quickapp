@@ -96,8 +96,10 @@ const submitLoginForm = (formEl: FormInstance | undefined) => {
           // 2. 存储用户信息
           globalStore.setToken(res.data.token);
           globalStore.setUsername(res.data.userInfoVo?.sysUser?.username);
-          globalStore.setRole(res.data.userInfoVo?.sysRoleList[0]?.name);
-          globalStore.setDept(res.data.userInfoVo?.deptTreeVoList[0]?.name);
+          globalStore.setNickname(res.data.userInfoVo?.sysUser?.nickName);
+          globalStore.setEmail(res.data.userInfoVo?.sysUser?.email);
+          globalStore.setRole(res.data.userInfoVo?.sysRoleList.map((r: any) => r.name).join("、"));
+          globalStore.setDept(res.data.userInfoVo?.deptTreeVoList.map((d: any) => d.name).join("、"));
           // 如果 menuVoList 带id=1的系统设置，则所有其他菜单均为系统设置的子菜单，只存储子菜单列表
           if (res.data.userInfoVo?.menuVoList[0].id === 1) {
             authStore.setOriginAuthMenuList(res.data.userInfoVo?.menuVoList[0].childrenList);
