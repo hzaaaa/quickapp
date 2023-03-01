@@ -3,12 +3,14 @@ import check from "./check";
 import permission from "./permission";
 import debounce from "./debounce";
 import throttle from "./throttle";
+import sticky from "./sticky";
 
 const directivesList: any = {
   check,
   permission,
   debounce,
   throttle,
+  sticky,
 };
 
 const directives = {

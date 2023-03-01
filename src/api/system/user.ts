@@ -4,6 +4,15 @@ import { PORTAuth } from "../config/servicePort";
 
 /**
  * @name 获取用户列表 list
+ * @param deptId 非必须，部门 ID, 不传此参数则查询所有
+ */
+export const getUserSynopsisByDeptIdApi = (params?: any) => {
+  // console.warn("获取用户列表");
+  return http.get<any>(PORTAuth + `/user/management/getUserSynopsisByDeptId?${qs.stringify(params)}`);
+};
+
+/**
+ * @name 获取用户列表 list
  * @param userName 非必须，用户姓名
  * @param nickName 非必须，用户昵称
  * @param phone 非必须，手机号
@@ -108,4 +117,39 @@ export const postGetUserListByFormApi = (params: any) => {
 export const getRoleUserListApi = () => {
   // console.warn("获取用户列表");
   return http.get<any>(PORTAuth + `/user/management/getRoleList`);
+};
+
+/**
+ * @name 人员修改（业务）
+ * @param userId 必须，用户id，number
+ * @param password 非必须，用户密码
+ * @param deptId 非必须，部门id，number
+ * @param nickName 非必须，用户昵称
+ * @param email 非必须，用户邮箱
+ * @param roleIdList 非必须，角色id数组，number[]
+ * @param enable 非必须，是否启用，0-禁用，1启用, number
+ */
+export const postUpdateUserApi = (params: any) => {
+  return http.post(PORTAuth + `/user/management/updateUser`, params);
+};
+
+/**
+ * @name 人员创建（业务）
+ * @param userName 必须，用户名
+ * @param password 必须，用户密码
+ * @param deptId 必须，部门id，number
+ * @param nickName 必须，用户昵称
+ * @param email 必须，用户邮箱
+ * @param roleIdList 必须，角色id数组，number[]
+ */
+export const postCreateUserApi = (params: any) => {
+  return http.post(PORTAuth + `/user/management/createUser`, params);
+};
+
+/**
+ * @name 获取人员信息（业务）
+ * @param userId 必须，人员ID, number
+ */
+export const getUserInfoByUserIdApi = (params: { userId: number }) => {
+  return http.get<any>(PORTAuth + `/user/management/getUserInfoByUserId?${qs.stringify(params)}`);
 };

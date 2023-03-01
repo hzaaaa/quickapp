@@ -1,7 +1,7 @@
 <template>
   <div class="subLayout">
     <div class="subLayout-aside" :class="{ narrow: isCollapse }">
-      <el-menu :collapse="isCollapse" :collapse-transition="false">
+      <el-menu :collapse="isCollapse" :collapse-transition="false" :default-active="route.path">
         <template v-for="menu in authStore.showMenuListGet.find((m) => m.title === '账户')?.childrenList" :key="menu.id">
           <el-sub-menu :index="`${menu.id}`">
             <template #title>
@@ -33,9 +33,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Expand, Fold } from "@element-plus/icons-vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/store/auth";
 
+const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 // const temp = () => {
@@ -64,9 +65,13 @@ const clickSubMenu = (menuItem: any) => {
 <style scoped lang="scss">
 .subLayout {
   display: flex;
-  flex: 1;
+  width: 100%;
+  height: 100%;
   &-aside {
     position: relative;
+    flex-grow: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
     border-right: 4px #f2f2f2 solid;
     width: 200px;
     &-collapse {
@@ -79,6 +84,7 @@ const clickSubMenu = (menuItem: any) => {
     }
   }
   &-contain {
+    overflow: hidden;
     flex: 1;
     padding: 12px 12px 0;
   }

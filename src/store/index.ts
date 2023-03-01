@@ -8,10 +8,18 @@ export const useGlobalStore = defineStore({
   state: () => ({
     // token
     token: "",
-    // 用户名
+    // 用户ID
+    id: <null | number>null,
+    // 用户账号
     username: "",
+    // 姓名
+    nickname: "",
+    // 邮箱
+    email: "",
     // 角色
     role: "",
+    // 角色 code, SuperAdministrator 是初始超管
+    roleCodeList: <string[]>[],
     // 所属部门
     dept: "",
   }),
@@ -22,11 +30,23 @@ export const useGlobalStore = defineStore({
     setToken(token: string) {
       this.token = token;
     },
+    setUserId(id: number) {
+      this.id = id;
+    },
     setUsername(username: string) {
       this.username = username;
     },
+    setNickname(nickname: string) {
+      this.nickname = nickname;
+    },
+    setEmail(email: string) {
+      this.email = email;
+    },
     setRole(role: string) {
       this.role = role;
+    },
+    setRoleCode(roleCodeList: string[]) {
+      this.roleCodeList = roleCodeList;
     },
     setDept(dept: string) {
       this.dept = dept;

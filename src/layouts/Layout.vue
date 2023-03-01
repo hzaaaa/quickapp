@@ -24,7 +24,7 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item disabled>xx@weiyankeji.cn</el-dropdown-item>
+              <el-dropdown-item disabled v-if="globalStore.email">{{ globalStore.email }}</el-dropdown-item>
               <el-dropdown-item divided @click="jumpToInfo">个人信息设置</el-dropdown-item>
               <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -93,7 +93,7 @@ const logout = () => {
       // 1. 调用退出登录接口
       await logoutApi();
       // 2. 清除 token 等缓存
-      globalStore.setToken("");
+      globalStore.$reset();
       localStorage.clear();
       // document.cookie = "";
       // 3. 重定向到登录页,并携带当前页面地址和参数
@@ -109,7 +109,7 @@ const logout = () => {
 .home {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  min-width: 1200px;
   height: 100%;
 }
 .header {

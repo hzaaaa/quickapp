@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-// AuthStore 菜单、权限相关存储
+// AccountStore 账户相关存储
 export const useAccountStore = defineStore({
   // id: 必须，在所有 Store 中唯一
   id: "AccountState",
@@ -15,6 +15,7 @@ export const useAccountStore = defineStore({
       email: "",
       roleList: <any[]>[],
       deptId: -1,
+      enabled: -1,
     },
     // 修改角色权限时的角色 id
     modifyRoleId: -1,

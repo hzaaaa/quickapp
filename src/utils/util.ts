@@ -6,7 +6,7 @@
 export function getRouterMenuList(menuList: Menu.MenuOptions[]) {
   let newMenuList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(menuList));
   // 初始自带的几个设置菜单不在此系统中生成动态路由
-  let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置"];
+  let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置", "基础权限"];
   return newMenuList.filter((item) => {
     if (hiddenList.includes(item.title)) return false;
     if (item.component === "Layout" && !item.childrenList![0].component) {
@@ -47,7 +47,7 @@ export function flatMenuList(menuList: Menu.MenuOptions[]) {
  */
 export function getShowMenuList(menuList: Menu.MenuOptions[]) {
   let newMenuList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(menuList));
-  let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置"];
+  let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置", "基础权限"];
   return newMenuList.filter((item) => {
     // 初始自带的几个设置菜单不显示在此系统中
     if (hiddenList.includes(item.title)) return false;
@@ -64,7 +64,7 @@ export function getShowMenuList(menuList: Menu.MenuOptions[]) {
 export function getRoleMenuList(menuList: Menu.MenuOptions[]) {
   let newMenuList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(menuList));
   // 初始自带的几个设置菜单不在此系统中生成动态路由
-  let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置"];
+  let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置", "基础权限"];
   return newMenuList.filter((item) => {
     if (hiddenList.includes(item.title)) return false;
     item.childrenList?.length && (item.childrenList = getRouterMenuList(item.childrenList));
