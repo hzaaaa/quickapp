@@ -19,7 +19,7 @@ job_build_dev:
     - pwd
     - ls -la
     - npm i
-    - npm run build:dev
+    - npm run build:pro
     - ls -la
     - ls -l dist
   cache:
@@ -36,7 +36,6 @@ job_deploy_dev:
   script:
     - pwd
     - ls -l
-    - mv dist
     - ssh ${USER_DEV}@${HOST_DEV} "[ ! -d ${PATH_DEV} ] && mkdir -p ${PATH_DEV}; echo 1"
     - scp -r dist ${USER_DEV}@${HOST_DEV}:${PATH_DEV}
     - ssh ${USER_DEV}@${HOST_DEV} "cd ${PATH_DEV} && [ -d dist ] && rm -rf display && mv dist display"
