@@ -10,7 +10,7 @@ cache:
 job_build_dev:
   stage: build
   tags:
-    - front-runner
+    - java-cvm01
   only:
     - dev
 
@@ -30,7 +30,7 @@ job_build_dev:
 job_deploy_dev:
   stage: deploy
   tags:
-    - front-runner
+    - java-cvm01
   script:
     - pwd
     - ls -l
