@@ -154,7 +154,7 @@ const getCompanyList = () => {
     });
   }
 };
-const selectChange = (val) => {
+const selectChange = (val: any) => {
   optionalCompanyList.value = [];
   searchForm.companyId = "";
 };
@@ -216,6 +216,23 @@ const handleSelectAll = (selection: any) => {
     });
   }
 };
+// const handleSelect = (selection: any, row: any) => {
+//   console.log("handleSelect", selection, row);
+//   let index = choosenIdList.value.indexOf(row.advertiserId);
+//   if (index !== -1) {
+//     choosenList.value.splice(index, 1);
+//     choosenIdList.value.splice(index, 1);
+//   } else {
+//     // 全不选，遍历左侧列表，判断左侧某行在不在右侧，在则删除
+//     tableData.value?.forEach((row: any) => {
+//       let index = choosenIdList.value.indexOf(row.advertiserId);
+//       if (index !== -1) {
+//         choosenList.value.splice(index, 1);
+//         choosenIdList.value.splice(index, 1);
+//       }
+//     });
+//   }
+// };
 // const handleSelectionChange = (rows: any[]) => {
 //   console.log("handleSelectionChange", rows);
 //   // choosenList.value = rows;
