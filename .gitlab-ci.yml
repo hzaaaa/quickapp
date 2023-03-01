@@ -9,6 +9,7 @@ cache:
 
 job_build_dev:
   stage: build
+  when: manual
   tags:
     - java-cvm01
   only:
@@ -29,6 +30,7 @@ job_build_dev:
 
 job_deploy_dev:
   stage: deploy
+  when: manual
   tags:
     - java-cvm01
   script:
