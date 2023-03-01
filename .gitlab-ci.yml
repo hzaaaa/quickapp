@@ -1,23 +1,40 @@
 stages:
-    - install
     - build
     - deploy
 
-job1:
-    stage: install
+cache:
+    key: build
+    paths:
+        - dist/
+
+job_build_dev:
+    stage: build
     tags:
-        - java-cvm01
+        - front-runner
+     only:
+        - dev
+
     script:
         - pwd
         - ls -la
-        - npm install --registry=http://maven-repo.weiyankeji.cn/repository/npm-group/
-        - npm run build:pro
+        - npm i
+        - npm run build:dev
         - ls -la
+        - ls -l dist
+    cache:
+        key: build
+        paths:
+            - dist/
+        policy: push
 
-        
-job2:
+job_deploy_dev:
     stage: deploy
     tags:
-        - java-cvm01
+        - front-runner
     script:
-        - id
+        - pwd
+        - ls -l
+        - mv dist
+        - ssh ${USER_DEV}@${HOST_DEV} "[ ! -d ${PATH_DEV} ] && mkdir -p ${PATH_DEV}; echo 1"
+        - scp -r dist ${USER_DEV}@${HOST_DEV}:${PATH_DEV}
+        - ssh ${USER_DEV}@${HOST_DEV} "cd ${PATH_DEV} && [ -d dist ] && rm -rf display && mv dist display"
