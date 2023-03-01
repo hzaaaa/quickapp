@@ -1,0 +1,35 @@
+/* 全局 css 变量 */
+// 这里由于是scss文件，不需要加上url()将路径包裹起来，不然会失效
+@import "element-ui.scss"; // stylelint-disable-line
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+#app {
+  width: 100%;
+  height: 100%;
+}
+p {
+  margin: 0;
+}
+.pointer {
+  cursor: pointer;
+}
+.primary-color {
+  color: var(--el-color-primary);
+}
+
+/* flex */
+.flx-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.flx-align-center {
+  display: flex;
+  align-items: center;
+}
