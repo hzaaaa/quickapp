@@ -1,40 +1,40 @@
 stages:
-    - build
-    - deploy
+  - build
+  - deploy
 
 cache:
-    key: build
-    paths:
-        - dist/
+  key: build
+  paths:
+    - dist/
 
 job_build_dev:
-    stage: build
-    tags:
-        - front-runner
-     only:
-        - dev
+  stage: build
+  tags:
+    - front-runner
+  only:
+    - dev
 
-    script:
-        - pwd
-        - ls -la
-        - npm i
-        - npm run build:dev
-        - ls -la
-        - ls -l dist
-    cache:
-        key: build
-        paths:
-            - dist/
-        policy: push
+  script:
+    - pwd
+    - ls -la
+    - npm i
+    - npm run build:dev
+    - ls -la
+    - ls -l dist
+  cache:
+    key: build
+    paths:
+      - dist/
+    policy: push
 
 job_deploy_dev:
-    stage: deploy
-    tags:
-        - front-runner
-    script:
-        - pwd
-        - ls -l
-        - mv dist
-        - ssh ${USER_DEV}@${HOST_DEV} "[ ! -d ${PATH_DEV} ] && mkdir -p ${PATH_DEV}; echo 1"
-        - scp -r dist ${USER_DEV}@${HOST_DEV}:${PATH_DEV}
-        - ssh ${USER_DEV}@${HOST_DEV} "cd ${PATH_DEV} && [ -d dist ] && rm -rf display && mv dist display"
+  stage: deploy
+  tags:
+    - front-runner
+  script:
+    - pwd
+    - ls -l
+    - mv dist
+    - ssh ${USER_DEV}@${HOST_DEV} "[ ! -d ${PATH_DEV} ] && mkdir -p ${PATH_DEV}; echo 1"
+    - scp -r dist ${USER_DEV}@${HOST_DEV}:${PATH_DEV}
+    - ssh ${USER_DEV}@${HOST_DEV} "cd ${PATH_DEV} && [ -d dist ] && rm -rf display && mv dist display"
