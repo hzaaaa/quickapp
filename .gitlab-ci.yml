@@ -1,0 +1,40 @@
+stages:
+  - build
+  - deploy
+
+cache:
+  key: build
+  paths:
+    - dist/
+
+job_build_dev:
+  stage: build
+  tags:
+    - java-cvm01
+  only:
+    - dev
+
+  script:
+    - pwd
+    - ls -la
+    - npm i --registry=https://registry.npm.taobao.org 
+    - npm run build:dev
+    - ls -la
+    - ls -l dist
+  cache:
+    key: build
+    paths:
+      - dist/
+    policy: push
+
+job_deploy_dev:
+  stage: deploy
+  tags:
+    - java-cvm01
+  script:
+    - pwd
+    - ls -l
+    - mv dist
+    - ssh ${USER_DEV}@${HOST_DEV} "[ ! -d ${PATH_DEV} ] && mkdir -p ${PATH_DEV}; echo 1"
+    - scp -r dist ${USER_DEV}@${HOST_DEV}:${PATH_DEV}
+    - ssh ${USER_DEV}@${HOST_DEV} "cd ${PATH_DEV} && [ -d dist ] && rm -rf display && mv dist display"
