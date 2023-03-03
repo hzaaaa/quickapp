@@ -39,7 +39,7 @@ onMounted(() => {
         tableData.value.push(r);
       }
     });
-    let roleNameList = ["管理员", "项目负责人", "编导", "摄像", "剪辑"];
+    let roleNameList = ["管理员", "项目负责人", "编导", "摄像", "剪辑", "运营"];
     tableData.value.forEach((r: any) => {
       r.userList = r.userList.map((u: any) => u.userNickName).join("、");
     });
