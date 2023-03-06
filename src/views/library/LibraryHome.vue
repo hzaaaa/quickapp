@@ -554,6 +554,11 @@ const clickSiderProject = (project: any) => {
   curProjId.value = project.projectId;
   curProjName.value = project.projectName;
   materialStore.setProject(project);
+  sourceAccount.value = "";
+  // 获取来源账号列表，接口获取，v1版本只有头条来源的
+  getAdvertiserListSearchApi({ appType: appType.value, projectId: curProjId.value }).then((res) => {
+    adList.value = res.data;
+  });
   if (
     (!project.collabList || !project.collabList.includes(globalStore.id)) &&
     !globalStore.roleCodeList.includes("SuperAdministrator")
@@ -671,7 +676,7 @@ const changeToToutiao = () => {
     mediaCategory.value = 1;
     appType.value = 1;
     // 获取来源账号列表，接口获取，v1版本只有头条来源的
-    getAdvertiserListSearchApi({ appType: appType.value }).then((res) => {
+    getAdvertiserListSearchApi({ appType: appType.value, projectId: curProjId.value }).then((res) => {
       adList.value = res.data;
     });
     search();
@@ -683,7 +688,7 @@ const changeToKuaishou = () => {
     mediaCategory.value = 4;
     appType.value = 3;
     // 获取来源账号列表，接口获取，v1版本只有头条来源的
-    getAdvertiserListSearchApi({ appType: appType.value }).then((res) => {
+    getAdvertiserListSearchApi({ appType: appType.value, projectId: curProjId.value }).then((res) => {
       adList.value = res.data;
     });
     search();
@@ -1354,7 +1359,6 @@ const pageParams = reactive({
   total: 20,
 });
 const handlePageChange = (pageNum: number) => {
-  console.log("handlePageChange", pageNum);
   let params = <any>{
     projId: curProjId.value,
     mediaCategory: mediaCategory.value,
