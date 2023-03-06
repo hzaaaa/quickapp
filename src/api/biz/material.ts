@@ -142,6 +142,7 @@ export const getAdvertiserListAddedApi = (params: any) => {
 /**
  * @name 获取已添加的账户列表(搜索用)
  * @param appType 必须，应用类型，巨量引擎（头条）：1 巨量千川（千川）：2 磁力引擎（快手）：3 磁力金牛：4
+ * @param projectId 非必须，项目ID
  */
 export const getAdvertiserListSearchApi = (params: any) => {
   return http.get<any>(PORTBiz + `/advertiser/list/search?${qs.stringify(params)}`);
