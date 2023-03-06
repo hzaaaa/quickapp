@@ -120,8 +120,11 @@ const userFormRules = reactive<FormRules>({
 });
 
 getRoleListApi().then((res) => {
-  let roleNameList = ["管理员", "项目负责人", "编导", "摄像", "剪辑"];
-  OptionalRoleList.value = res.data.list.filter((role: any) => roleNameList.includes(role.name)).reverse();
+  let roleNameList = ["管理员", "项目负责人", "编导", "摄像", "剪辑", "运营"];
+  // OptionalRoleList.value = res.data.list.filter((role: any) => roleNameList.includes(role.name)).reverse();
+  OptionalRoleList.value = res.data.list
+    .filter((role: any) => roleNameList.includes(role.name))
+    .sort((a: any, b: any) => a.id - b.id);
 });
 getDeptTreeApi({ id: 8 }).then((res) => {
   OptionalDeptList.value = res.data[0].childrenList;
