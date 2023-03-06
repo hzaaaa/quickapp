@@ -32,7 +32,7 @@
                 :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }"
                 @select="handleSelect"
                 @select-all="handleSelectAll"
-                height="500"
+                height="400"
               >
                 <el-table-column type="selection" width="50"></el-table-column>
                 <el-table-column label="账户ID" prop="remoteAdvertiserId" width="160"></el-table-column>
@@ -52,7 +52,7 @@
               :data="choosenList"
               class="result"
               :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }"
-              height="500"
+              height="400"
             >
               <el-table-column prop="remoteAdvertiserName">
                 <template #header>
