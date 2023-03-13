@@ -19,11 +19,7 @@
 
 ## 三、安装使用步骤
 
-- **Clone：**
 
-```text
-git clone ssh://git@172.16.110.183:10022/ads/creativedesk/front-end.git
-```
 
 - **Install：**
 
