@@ -33,6 +33,40 @@ const routes: RouteRecordRaw[] = [
   //   path: "/:catchAll(.*)",
   //   component: () => import("@/components/ErrorMessage/404.vue"),
   // },
+
+  // 假路由 临时路由
+  {
+    path: "/",
+    component: Layout,
+    children: [
+      {
+        path: "configQuickApp",
+        name: "configQuickApp",
+        component: () => import("@/views/configQuickApp/index.vue"),
+      },
+      {
+        path: "editConfig",
+        name: "editConfig",
+        component: () => import("@/views/configQuickApp/editConfig.vue"),
+      },
+    ], // 注意这里要带上 文件后缀.vue
+  },
+  // {
+  //   path: "/configQuickApp",
+  //   name: "configQuickApp",
+  //   component: () => import("@/views/configQuickApp/index.vue"), // 注意这里要带上 文件后缀.vue
+  // },
+  {
+    path: "/viewLaunchData",
+    name: "viewLaunchData",
+    component: () => import("@/views/Login.vue"), // 注意这里要带上 文件后缀.vue
+  },
+  {
+    path: "/mediaIdentityManagement",
+    name: "mediaIdentityManagement",
+    component: () => import("@/views/Login.vue"), // 注意这里要带上 文件后缀.vue
+  },
+  
 ];
 
 const router = createRouter({

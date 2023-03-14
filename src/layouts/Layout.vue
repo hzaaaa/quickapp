@@ -3,7 +3,7 @@
     <!-- 顶部信息栏 -->
     <header class="header">
       <!-- 顶部信息栏-标题 -->
-      <div class="header-title" @click="temp">广告素材后台</div>
+      <div class="header-title" @click="temp">快应用投放配置管理系统</div>
       <!-- 顶部信息栏-一级菜单 -->
       <div class="header-directory">
         <div
@@ -35,11 +35,16 @@
 
     <!-- 主体部分 -->
     <div class="body">
-      <!-- 主体部分-左侧导航栏
-      <aside class="aside"></aside> -->
+      <!-- 主体部分-左侧导航栏-->
+      <!-- <aside class="aside"></aside>  -->
+      
       <!-- 主体部分-内容 -->
       <div class="container">
+        <leftAside></leftAside>
+        <div class="right-container">
         <RouterView></RouterView>
+      </div>
+        
       </div>
     </div>
   </div>
@@ -53,6 +58,9 @@ import { useRoute, useRouter } from "vue-router";
 import { useGlobalStore } from "@/store";
 import { useAuthStore } from "@/store/auth";
 import { getFisrtRoute } from "@/utils/util";
+
+// import subLayout from './subLayout.vue'
+import leftAside from './leftAside.vue'
 
 const route = useRoute();
 const router = useRouter();
@@ -120,7 +128,7 @@ const logout = () => {
   &-title {
     box-sizing: border-box;
     padding-left: 16px;
-    width: 200px;
+    width: 250px;
     font-size: 20px;
   }
   &-directory {
@@ -169,9 +177,15 @@ const logout = () => {
   .container {
     display: flex;
     overflow-y: hidden;
-    flex-direction: column;
+    // flex-direction: column;
     width: 100%;
     height: 100%;
+    .right-container{
+      padding: 12px;
+      padding-bottom: 0;
+      flex: 1;
+      width: 0;
+    }
   }
 }
 </style>
