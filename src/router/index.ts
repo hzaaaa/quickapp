@@ -35,37 +35,28 @@ const routes: RouteRecordRaw[] = [
   // },
 
   // 假路由 临时路由
-  {
-    path: "/",
-    component: Layout,
-    children: [
-      {
-        path: "configQuickApp",
-        name: "configQuickApp",
-        component: () => import("@/views/configQuickApp/index.vue"),
-      },
-      {
-        path: "editConfig",
-        name: "editConfig",
-        component: () => import("@/views/configQuickApp/editConfig.vue"),
-      },
-    ], // 注意这里要带上 文件后缀.vue
-  },
+  // {
+  //   path: "/",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "configQuickApp",
+  //       name: "configQuickApp",
+  //       component: () => import("@/views/configQuickApp/index.vue"),
+  //     },
+  //     {
+  //       path: "configQuickAppEdit",
+  //       name: "configQuickAppEdit",
+  //       component: () => import("@/views/configQuickApp/edit.vue"),
+  //     },
+  //   ], // 注意这里要带上 文件后缀.vue
+  // },
   // {
   //   path: "/configQuickApp",
   //   name: "configQuickApp",
   //   component: () => import("@/views/configQuickApp/index.vue"), // 注意这里要带上 文件后缀.vue
   // },
-  {
-    path: "/viewLaunchData",
-    name: "viewLaunchData",
-    component: () => import("@/views/Login.vue"), // 注意这里要带上 文件后缀.vue
-  },
-  {
-    path: "/mediaIdentityManagement",
-    name: "mediaIdentityManagement",
-    component: () => import("@/views/Login.vue"), // 注意这里要带上 文件后缀.vue
-  },
+  
   
 ];
 
@@ -85,7 +76,7 @@ router.beforeEach(async (to, from, next) => {
   // console.log("to", to);
 
   const globalStore = useGlobalStore();
-
+  
   // 1. 如果访问登录页，没有 token 直接放行，有 token 停留在当前页
   if (to.path.startsWith("/login")) {
     return next();
@@ -98,9 +89,11 @@ router.beforeEach(async (to, from, next) => {
     const path = `/login?redirect=${to.path}&params=${JSON.stringify(to.query ? to.query : to.params)}`;
     return next(path);
   }
-
+  
   // 3. 如果没有菜单列表，重新请求菜单列表并添加动态路由（手动刷新、输入地址跳转时）
   const authStore = useAuthStore();
+  
+  
   if (!authStore.authMenuList.length) {
     await initDynamicRouter();
     return next({ ...to, replace: true });

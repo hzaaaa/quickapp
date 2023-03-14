@@ -1,7 +1,7 @@
 <template>
   <div class="login" :style="'background-image: url(' + Background + ')'">
     <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="login-form-title">广告素材后台</h3>
+      <h3 class="login-form-title">快应用投放配置管理系统</h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" placeholder="请输入账号" :prefix-icon="User"></el-input>
       </el-form-item>
@@ -109,6 +109,7 @@ const submitLoginForm = (formEl: FormInstance | undefined) => {
           //   globalStore.setDept(res.data.userInfoVo?.deptTreeVoList[0]?.name);
           // }
           // 如果 menuVoList 带id=1的系统设置，则所有其他菜单均为系统设置的子菜单，只存储子菜单列表
+          // debugger
           if (res.data.userInfoVo?.menuVoList[0].id === 1) {
             authStore.setOriginAuthMenuList(res.data.userInfoVo?.menuVoList[0].childrenList);
           } else {
@@ -122,11 +123,13 @@ const submitLoginForm = (formEl: FormInstance | undefined) => {
           // 4. 添加动态路由
           await initDynamicRouter();
 
+          router.push( "/configQuickApp" );
+          // router.push('/');
           // 5.跳转页面，如果没有 redirect 跳转到默认页，如果有就携带参数跳转到 redirect
-          if (!route.query?.redirect) router.push(getFisrtRoute(authStore.authMenuListGet));
-          else if (route.query?.redirect === "/library") router.push({ name: "library" });
-          else if (route.query?.redirect === "/report") router.push({ name: "report" });
-          else router.push({ path: route.query?.redirect as string, query: JSON.parse(route.query?.params as string) });
+          // if (!route.query?.redirect) router.push(getFisrtRoute(authStore.authMenuListGet));
+          // else if (route.query?.redirect === "/library") router.push({ name: "library" });
+          // else if (route.query?.redirect === "/report") router.push({ name: "report" });
+          // else router.push({ path: route.query?.redirect as string, query: JSON.parse(route.query?.params as string) });
         })
         .catch((err) => {
           console.log("loginApi 接口错误", err);

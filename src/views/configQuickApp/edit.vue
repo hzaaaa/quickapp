@@ -1,6 +1,6 @@
 <template>
     <div class="userModify">
-      <el-container>
+      <el-container >
         <el-header>
           <el-icon class="back-icon pointer" @click="back"><ArrowLeft /></el-icon>
           <span> {{ route.query.type === "add" ? "新增" : "编辑" }}一个快应用的配置 </span>
@@ -56,7 +56,10 @@
             </el-form-item>
 
 
-            <el-form-item label="邮箱号码" prop="email">
+            <el-form-item label="投放时间设定" prop="email">
+                <MSchedule @receive="onReceive" :curValue="curValue" />
+            </el-form-item>
+            <el-form-item label="投放时间设定" prop="email">
                 <MSchedule @receive="onReceive" :curValue="curValue" />
             </el-form-item>
             <el-form-item label="密码" prop="password">
@@ -250,6 +253,10 @@
   <style scoped lang="scss">
   .userModify {
     font-size: 14px;
+    height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
   .el-header {
     display: flex;
@@ -264,6 +271,12 @@
   .tips {
     margin-left: 16px;
     color: var(--el-text-color-placeholder);
+  }
+   .el-container {
+    height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
   </style>
   

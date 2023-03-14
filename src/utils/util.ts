@@ -52,7 +52,7 @@ export function getShowMenuList(menuList: Menu.MenuOptions[]) {
     // 初始自带的几个设置菜单不显示在此系统中
     if (hiddenList.includes(item.title)) return false;
     item.childrenList?.length && (item.childrenList = getShowMenuList(item.childrenList));
-    return item.type <= 5;
+    return item.type <= 6;
   });
 }
 

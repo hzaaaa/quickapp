@@ -4,15 +4,114 @@
 
   
     <el-menu
-      default-active="2"
+      
       class="el-menu-vertical-demo"
       :collapse="isCollapse"
-      
+      :default-active="activeMenu"
+      :collapse-transition="false"
     >
-    <!-- @open="handleOpen"
+    
+      <el-menu-item 
+        v-for="(item, index) in authStore.showMenuListGet"
+        :key="item.id"
+        
+        :index="item.childrenList&&item.childrenList[0].redirect"
+        @click="clickSubMenu(item)"
+
+      >
+        <el-icon><setting /></el-icon>
+        <template #title>{{item.title}} </template>
+      </el-menu-item>
+    
+      
+    </el-menu>
+    <el-row class="subLayout-aside-collapse">
+      <el-icon v-if="isCollapse" @click="expandSidebar" size="large" class="pointer"><Expand /></el-icon>
+      <el-icon v-else @click="foldSidebar" size="large" class="pointer "><Fold /></el-icon>
+    </el-row>
+  </div>
+</template>
+<script setup lang="ts">
+import {
+  Document,
+  Menu ,
+  Location,
+  Setting,
+  Expand,
+  Fold,
+} from '@element-plus/icons-vue'
+import { ref, computed,watch} from 'vue';
+// import {  } from "@element-plus/icons-vue";
+import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "@/store/auth";
+
+const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
+// const temp = () => {
+//   console.log("authMenuListGet", authStore.authMenuListGet);
+//   console.log("showMenuListGet", authStore.showMenuListGet);
+//   console.log("routerMenuListGet", authStore.routerMenuListGet);
+// };
+console.log("showMenuListGet", authStore.showMenuListGet);
+let routeList:any = {};
+authStore.showMenuListGet.forEach(item=>{
+  let value = item.childrenList&&item.childrenList[0].redirect;
+  item.childrenList?.forEach(item2=>{
+    routeList[item2.redirect||''] = value
+  })
+})
+console.log('routeList',routeList)
+//菜单命中
+let activeMenu =  computed(() => {
+  // debugger
+  return routeList[route.path]
+})
+
+
+
+
+/**
+ * 左侧列表
+ */
+// 左侧列表是否收起
+const isCollapse = ref(false);
+const expandSidebar = () => {
+  isCollapse.value = false;
+};
+const foldSidebar = () => {
+
+
+  isCollapse.value = true;
+};
+const clickSubMenu = (menuItem:any) => {
+  // console.log("clickSubMenu", menuItem);
+  // router.push(menuItem.index);
+  
+  router.push(menuItem.childrenList&&menuItem.childrenList[0].redirect);
+
+};
+</script>
+
+<style scoped lang="scss">
+.leftAside{
+  position: relative;
+}
+.subLayout-aside-collapse{
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  // padding-left: 20px;
+  // padding-right: 20px;
+}
+</style>
+
+
+
+<!-- @open="handleOpen"
       @close="handleClose" -->
       
-      <el-menu-item index="2" @click="clickSubMenu">
+      <!-- <el-menu-item index="2" @click="clickSubMenu">
         <el-icon><Menu  /></el-icon>
         <template #title>配置快应用</template>
       </el-menu-item>
@@ -31,80 +130,4 @@
       <el-menu-item index="6">
         <el-icon><setting /></el-icon>
         <template #title>意见反馈汇总 </template>
-      </el-menu-item>
-      
-      <el-sub-menu index="7">
-        <template #title>
-          <el-icon><location /></el-icon>
-          <span>用户角色管理</span>
-        </template>
-        
-        <el-menu-item index="7-1">人员管理</el-menu-item>
-        <el-menu-item index="7-2">角色管理</el-menu-item>
-        
-        
-      </el-sub-menu>
-    </el-menu>
-    <el-row class="subLayout-aside-collapse">
-      <el-icon v-if="isCollapse" @click="expandSidebar" size="large" class="pointer center"><Expand /></el-icon>
-      <el-icon v-else @click="foldSidebar" size="large" class="pointer "><Fold /></el-icon>
-    </el-row>
-  </div>
-</template>
-<script setup lang="ts">
-import {
-  Document,
-  Menu ,
-  Location,
-  Setting,
-  Expand,
-  Fold,
-} from '@element-plus/icons-vue'
-import { ref } from 'vue';
-// import {  } from "@element-plus/icons-vue";
-import { useRoute, useRouter } from "vue-router";
-import { useAuthStore } from "@/store/auth";
-
-const route = useRoute();
-const router = useRouter();
-const authStore = useAuthStore();
-// const temp = () => {
-//   console.log("authMenuListGet", authStore.authMenuListGet);
-//   console.log("showMenuListGet", authStore.showMenuListGet);
-//   console.log("routerMenuListGet", authStore.routerMenuListGet);
-// };
-
-/**
- * 左侧列表
- */
-// 左侧列表是否收起
-const isCollapse = ref(false);
-const expandSidebar = () => {
-  isCollapse.value = false;
-};
-const foldSidebar = () => {
-
-
-  isCollapse.value = true;
-};
-const clickSubMenu = (menuItem: any) => {
-  // console.log("clickSubMenu", menuItem);
-  // router.push(menuItem.index);
-  router.push('/configQuickApp');
-
-};
-</script>
-
-<style scoped lang="scss">
-.leftAside{
-  position: relative;
-}
-.subLayout-aside-collapse{
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  // padding-left: 20px;
-  // padding-right: 20px;
-}
-</style>
-
+      </el-menu-item> -->

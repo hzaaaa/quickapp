@@ -301,7 +301,7 @@
 
   //跳转新增/编辑页
   const gotoEdit=()=>{
-    router.push(`/editConfig?type=add`);
+    router.push(`/configQuickAppEdit?type=add`);
 
   }
   

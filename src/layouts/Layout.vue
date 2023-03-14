@@ -5,7 +5,7 @@
       <!-- 顶部信息栏-标题 -->
       <div class="header-title" @click="temp">快应用投放配置管理系统</div>
       <!-- 顶部信息栏-一级菜单 -->
-      <div class="header-directory">
+      <!-- <div class="header-directory">
         <div
           v-for="(item, index) in authStore.showMenuListGet"
           :key="item.id"
@@ -14,7 +14,7 @@
         >
           {{ item.title }}
         </div>
-      </div>
+      </div> -->
       <!-- 顶部信息栏-用户信息 -->
       <div class="header-userinfo">
         <el-dropdown>
@@ -130,6 +130,7 @@ const logout = () => {
     padding-left: 16px;
     width: 250px;
     font-size: 20px;
+    flex:1;
   }
   &-directory {
     display: flex;
@@ -174,6 +175,8 @@ const logout = () => {
   overflow-y: auto;
   flex-grow: 1;
   width: 100%;
+  height: 0;
+  flex: 1;
   .container {
     display: flex;
     overflow-y: hidden;
@@ -185,6 +188,8 @@ const logout = () => {
       padding-bottom: 0;
       flex: 1;
       width: 0;
+      display: flex;
+      flex-direction: column;
     }
   }
 }
