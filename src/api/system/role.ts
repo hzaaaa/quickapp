@@ -12,6 +12,14 @@ export const getRoleListApi = (params?: any) => {
   // console.warn("获取角色列表");
   return http.get<any>(PORTAuth + `/role/list?${qs.stringify(params)}`);
 };
+/**
+ * @name 获取角色列表 list
+
+ */
+export const getRoleListApi2 = (params?: any) => {
+  // console.warn("获取角色列表");
+  return http.get<any>(PORTAuth + `/role/management/getRoleList`);
+};
 
 /**
  * @name 获取角色信息 info

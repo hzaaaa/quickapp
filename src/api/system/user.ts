@@ -118,6 +118,13 @@ export const getRoleUserListApi = () => {
   // console.warn("获取用户列表");
   return http.get<any>(PORTAuth + `/user/management/getRoleList`);
 };
+/**
+ * @name 管理员重置密码 
+ */
+export const passwordRestApi = (params: any) => {
+  // console.warn("获取用户列表");
+  return http.post<any>(PORTAuth + `/user/password/rest`,params);
+};
 
 /**
  * @name 人员修改（业务）

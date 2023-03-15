@@ -54,6 +54,8 @@ const authStore = useAuthStore();
 //   console.log("routerMenuListGet", authStore.routerMenuListGet);
 // };
 console.log("showMenuListGet", authStore.showMenuListGet);
+
+//构建菜单命中数组
 let routeList:any = {};
 authStore.showMenuListGet.forEach(item=>{
   let value = item.childrenList&&item.childrenList[0].redirect;
@@ -96,6 +98,7 @@ const clickSubMenu = (menuItem:any) => {
 <style scoped lang="scss">
 .leftAside{
   position: relative;
+  border-right: 1px solid #f2f2f2;
 }
 .subLayout-aside-collapse{
   position: absolute;

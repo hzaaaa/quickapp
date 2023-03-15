@@ -13,8 +13,10 @@
     "build:pro": "vite build --mode production"
   },
   "dependencies": {
+    "@bytedance-ad/mui-vue3": "^2.0.4",
     "@element-plus/icons-vue": "^2.0.10",
     "axios": "^1.2.2",
+    "echarts": "^5.4.1",
     "element-plus": "^2.2.28",
     "pinia": "^2.0.28",
     "pinia-plugin-persistedstate": "^3.0.2",

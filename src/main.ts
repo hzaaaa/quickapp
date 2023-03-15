@@ -1,5 +1,6 @@
 // main.ts
 import { createApp, createVNode } from "vue";
+import '@bytedance-ad/mui-vue3/dist/style.css'
 import App from "./App.vue";
 // global css
 import "@/assets/styles/index.scss";
