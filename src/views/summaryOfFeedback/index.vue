@@ -7,20 +7,20 @@
             <div class="filter-label">时间范围</div>
             <div class="" style="margin-right:12px">
 
-                <el-date-picker v-model="searchForm.params2" type="datetimerange" range-separator="To"
+                <el-date-picker v-model="searchForm.companyId" type="datetimerange" range-separator="To"
                     start-placeholder="Start date" end-placeholder="End date" />
             </div>
             <div class="filter-label">选择手机品牌</div>
-            <el-select v-model="searchForm.enabled" class="filter-input">
+            <el-select v-model="searchForm.companyId" class="filter-input">
                 <el-option label="启用" :value="1"></el-option>
                 <el-option label="停用" :value="0"></el-option>
             </el-select>
             <div class="filter-label">选择快应用</div>
-            <el-select v-model="searchForm.enabled" class="filter-input">
+            <el-select v-model="searchForm.companyId" class="filter-input">
                 <el-option label="启用" :value="1"></el-option>
                 <el-option label="停用" :value="0"></el-option>
             </el-select>
-            <el-button type="primary" @click="search">查询</el-button>
+            <el-button type="primary">查询</el-button>
         </el-row>
         <el-config-provider :locale="zhCn">
             <el-table :data="tableDataList" class="table"

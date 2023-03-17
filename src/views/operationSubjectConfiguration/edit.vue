@@ -36,7 +36,7 @@
 
 
                     <el-form-item label="备注" prop="password">
-                        <el-input v-model="userForm.params1" :rows="5" type="textarea" placeholder="Please input" />
+                        <el-input v-model="userForm.userName" :rows="5" type="textarea" placeholder="Please input" />
 
                     </el-form-item>
 

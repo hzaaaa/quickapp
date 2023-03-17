@@ -24,7 +24,7 @@
           </el-table-column> -->
         <el-table-column label="操作">
           <template #default="scope">
-            <el-button link type="primary" @click="gotodetail(scope.row)" size="small">查看详情</el-button>
+            <el-button link type="primary" @click="gotodetail()" size="small">查看详情</el-button>
 
           </template>
         </el-table-column>

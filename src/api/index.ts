@@ -13,7 +13,7 @@ const config = {
 
 class RequestHttp {
   service: AxiosInstance;
-  constructor(config: AxiosRequestConfig) {
+  constructor(config: any) {
     // 实例化 axios
     this.service = axios.create(config);
 
@@ -23,7 +23,7 @@ class RequestHttp {
      * token校验(JWT) : 接受服务器返回的token,存储到vuex/pinia/本地储存当中
      */
     this.service.interceptors.request.use(
-      (config: AxiosRequestConfig) => {
+      (config: any) => {
         const globalStore = useGlobalStore();
         const token: string = globalStore.token;
         // 给每个请求添加 Authorization 请求头，将用户 token 传到后端

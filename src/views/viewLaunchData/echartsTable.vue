@@ -137,7 +137,7 @@
 
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, nextTick, onBeforeUnmount, defineProps } from 'vue'
 import {
     Download, FullScreen
@@ -146,7 +146,7 @@ import * as echarts from 'echarts';
 
 const props = defineProps(['type'])
 let activeTab = ref(1)
-let createZXT = (myChart) => {
+let createZXT = (myChart: any) => {
     var option = {
         tooltip: {
             trigger: 'axis',
@@ -178,7 +178,7 @@ let createZXT = (myChart) => {
     // myChart.
     option && myChart.setOption(option, true);
 }
-let createZZT = (myChart) => {
+let createZZT = (myChart: any) => {
     var option = {
         tooltip: {
             show: true
@@ -205,8 +205,8 @@ let createZZT = (myChart) => {
     option && myChart.setOption(option, true);
 }
 
-let downloadUrlFile = (url, fileName) => {
-    const a = document.createElement('a')
+let downloadUrlFile = (url: any, fileName: any) => {
+    const a: any = document.createElement('a')
     document.body.appendChild(a)
     a.style = 'display: none'
     a.href = url
@@ -217,7 +217,7 @@ let downloadUrlFile = (url, fileName) => {
     window.URL.revokeObjectURL(url);
     document.body.removeChild(a);
 }
-let downloadChart = (myChart) => {
+let downloadChart = (myChart: any) => {
     // 获取base64图片
     const chartImgUrl = myChart.getDataURL({
         pixelRatio: 2,
@@ -229,7 +229,7 @@ let downloadChart = (myChart) => {
 }
 
 
-let addFullScreenResizeListener = (myDom, myChart) => {
+let addFullScreenResizeListener = (myDom: any, myChart: any) => {
     chartList.push(myChart);
     // myDom.addEventListener('fullscreenchange', e => {
     //     myChart.resize();
@@ -239,9 +239,9 @@ let addFullScreenResizeListener = (myDom, myChart) => {
     })
 }
 let resizeCharts = () => {
-    nextTick(_ => {
+    nextTick(() => {
         //     debugger
-        chartList.forEach(item => {
+        chartList.forEach((item: any) => {
             item && item.resize();
         })
     })
@@ -251,16 +251,16 @@ defineExpose({
     resizeCharts
 })
 
-let intoFullScreen = (myDom) => {
+let intoFullScreen = (myDom: any) => {
     myDom.requestFullscreen();
 }
-let myChartRow1 = null;
-let myDomRow1 = null;
-let myChartRow2 = null;
-let myDomRow2 = null;
-let myChartRow3 = null;
-let myDomRow3 = null;
-let chartList = [];
+let myChartRow1: any = null;
+let myDomRow1: any = null;
+let myChartRow2: any = null;
+let myDomRow2: any = null;
+let myChartRow3: any = null;
+let myDomRow3: any = null;
+let chartList: any = [];
 onMounted(() => {
     document.querySelector
     myDomRow1 = document.getElementById(`${props.type}myEcharts1`);
@@ -281,7 +281,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
     console.log('chartList', chartList)
-    chartList.forEach(item => {
+    chartList.forEach((item: any) => {
         item && item.dispose();
     })
 

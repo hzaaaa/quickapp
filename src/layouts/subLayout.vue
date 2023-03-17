@@ -5,23 +5,25 @@
         <template v-for="menu in authStore.showMenuListGet.find((m) => m.title === '账户')?.childrenList" :key="menu.id">
           <el-sub-menu :index="`${menu.id}`">
             <template #title>
-              <el-icon><vIcon :icon="menu.icon" /></el-icon>
+              <el-icon>
+                <vIcon :icon="menu.icon" />
+              </el-icon>
               <span>{{ menu.title }}</span>
             </template>
-            <el-menu-item
-              :index="`${subMenu.redirect}`"
-              v-for="subMenu in menu.childrenList"
-              :key="subMenu.id"
-              @click="clickSubMenu"
-            >
+            <el-menu-item :index="`${subMenu.redirect}`" v-for="subMenu in menu.childrenList" :key="subMenu.id"
+              @click="clickSubMenu">
               <span>{{ subMenu.title }}</span>
             </el-menu-item>
           </el-sub-menu>
         </template>
       </el-menu>
       <el-row class="subLayout-aside-collapse">
-        <el-icon v-if="isCollapse" @click="expandSidebar" size="large" class="pointer"><Expand /></el-icon>
-        <el-icon v-else @click="foldSidebar" size="large" class="pointer"><Fold /></el-icon>
+        <el-icon v-if="isCollapse" @click="expandSidebar" size="large" class="pointer">
+          <Expand />
+        </el-icon>
+        <el-icon v-else @click="foldSidebar" size="large" class="pointer">
+          <Fold />
+        </el-icon>
       </el-row>
     </div>
     <div class="subLayout-contain">
@@ -67,6 +69,7 @@ const clickSubMenu = (menuItem: any) => {
   display: flex;
   width: 100%;
   height: 100%;
+
   &-aside {
     position: relative;
     flex-grow: 0;
@@ -74,20 +77,24 @@ const clickSubMenu = (menuItem: any) => {
     box-sizing: border-box;
     border-right: 4px #f2f2f2 solid;
     width: 200px;
+
     &-collapse {
       position: absolute;
       right: 12px;
       bottom: 12px;
     }
+
     &.narrow {
       width: 64px;
     }
   }
+
   &-contain {
     overflow: hidden;
     flex: 1;
     padding: 12px 12px 0;
   }
+
   .pointer {
     cursor: pointer;
   }
