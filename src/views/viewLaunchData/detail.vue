@@ -8,15 +8,30 @@
                 <span>快应用【{{ '奇域小说' }}】运营数据汇总：</span>
             </el-header>
             <el-main>
-                <el-tabs v-model="activeTab" type="card" class="flex-1" style="min-width: 100px">
-                    <el-tab-pane :label="1" :name="1">
+                <el-tabs @tab-click="resizeEcharts" v-model="activeTab" type="card" class="flex-1" style="min-width: 100px">
+                    <el-tab-pane label="1" :name="1">
+
                         <div>日期：2023-04-21</div>
-                        <echartsTable></echartsTable>
+                        <echartsTable type="1" ref="ET1"></echartsTable>
 
                     </el-tab-pane>
-                    <el-tab-pane :label="2" :name="2">2</el-tab-pane>
+                    <el-tab-pane label="2" :name="2">
+                        <div>日期：2023-04-22</div>
+                        <echartsTable type="2" ref="ET2"></echartsTable>
+                    </el-tab-pane>
                 </el-tabs>
-                <!-- <echartsTable></echartsTable> -->
+                <!-- <el-button-group>
+                    <el-button :type="activeTab === 1 ? 'primary' : ''" plain @click="activeTab = 1">1</el-button>
+                    <el-button :type="activeTab === 2 ? 'primary' : ''" plain @click="activeTab = 2">2</el-button>
+                </el-button-group>
+                <div class="" v-show="activeTab === 1">
+                    <div>日期：2023-04-21</div>
+                    <echartsTable class="one"></echartsTable>
+                </div>
+                <div v-show="activeTab === 2">
+                    <div>日期：2023-04-11</div>
+                    <echartsTable class="two"></echartsTable>
+                </div> -->
             </el-main>
         </el-container>
     </div>
@@ -25,7 +40,7 @@
 <script setup lang="ts">
 import { useAccountStore } from "@/store/account";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, getCurrentInstance, nextTick } from "vue";
 import { getRoleListApi } from "@/api/system/role";
 import { getDeptTreeApi } from "@/api/system/dept";
 import { postCreateUserApi, postUpdateUserApi } from "@/api/system/user";
@@ -44,54 +59,24 @@ const userForm = reactive({
     deptId: <null | number>null,
 });
 
-let activeTab = ref(1)
+let activeTab = ref(1);
+let ET1 = ref<any>(null);
+let ET2 = ref<any>(null);
+
+let resizeEcharts = () => {
+    // debugger
+    nextTick(() => {
+        ET1.value?.resizeCharts();
+        ET2.value?.resizeCharts();
+    })
+
+}
 
 const OptionalRoleList = ref<any>([]);
 const OptionalDeptList = ref<any>([]);
-const validateUserName = (rule: any, value: any, callback: any) => {
-    if (accountStore.behavior === "modify" && accountStore.modifyUserInfo.userName) return callback();
-    if (!value) return callback(new Error("请输入账号"));
-    const regexp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{5,20}$/;
-    if (!regexp.test(value)) callback(new Error("账号必须包含字母和数字，且在5~20位之间"));
-    else return callback();
-};
-const validateNickName = (rule: any, value: any, callback: any) => {
-    if (!value) return callback(new Error("请输入姓名"));
-    if (value.length > 20) callback(new Error("姓名不得超过20字"));
-    else return callback();
-};
-const validateEmail = (rule: any, value: any, callback: any) => {
-    if (!value) return callback(new Error("请输入邮箱"));
-    const regexp =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!regexp.test(value)) callback(new Error("请输入正常的邮箱号"));
-    else return callback();
-};
-const validatePass = (rule: any, value: any, callback: any) => {
-    if (accountStore.behavior === "modify") return callback();
-    if (!value) return callback(new Error("请输入密码"));
-    const regexp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/;
-    if (!regexp.test(value)) callback(new Error("密码必须包含字母和数字，且在6~20位之间"));
-    else return callback();
-};
-const validateRole = (rule: any, value: any, callback: any) => {
-    // if (accountStore.behavior === "modify") return callback();
-    if (!value || (Array.isArray(value) && !value.length)) return callback(new Error("请至少选择一个角色"));
-    else return callback();
-};
-const validateDept = (rule: any, value: any, callback: any) => {
-    if (!value) return callback(new Error("请至少选择一个部门"));
-    else return callback();
-};
 
-const userFormRules = reactive<FormRules>({
-    userName: [{ validator: validateUserName, trigger: "blur" }],
-    nickName: [{ validator: validateNickName, trigger: "blur" }],
-    email: [{ validator: validateEmail, trigger: "blur" }],
-    password: [{ validator: validatePass, trigger: "blur" }],
-    roleIdList: [{ validator: validateRole, trigger: "change" }],
-    deptId: [{ validator: validateDept, trigger: "change" }],
-});
+
+
 
 getRoleListApi().then((res) => {
     let roleNameList = ["管理员", "项目负责人", "编导", "摄像", "剪辑", "运营"];
@@ -105,55 +90,7 @@ getDeptTreeApi({ id: 1 }).then((res) => {
 });
 
 const accountStore = useAccountStore();
-const cancleModifyUser = () => {
-    console.log("cancleModifyUser", userForm);
-    router.back();
-};
-const saveModifyUser = async (formEl: FormInstance | undefined) => {
-    console.log("saveModifyUser", formEl);
-    if (accountStore.behavior !== "modify") {
-        // 添加人员
-        if (!formEl) return;
-        await formEl.validate((valid, fields) => {
-            if (valid) {
-                console.log("submit", userForm);
-                postCreateUserApi(userForm).then((res) => {
-                    console.log("postCreateUserApi", res);
-                    if (res.code === 200) {
-                        ElMessage.success("创建成功");
-                        router.push("/userAndRole");
-                    }
-                });
-            } else {
-                console.log("error", fields);
-            }
-        });
-    } else {
-        // 修改人员
-        if (!formEl) return;
-        await formEl.validate((valid, fields) => {
-            if (valid) {
-                let {
-                    password,
-                    ...otherUserForm } = userForm; // eslint-disable-line
-                let updateUserParams = <any>{
-                    ...otherUserForm,
-                    userId: accountStore.userInfoGet.userId,
-                    enabled: accountStore.userInfoGet.enabled,
-                };
-                if (password) updateUserParams.password = password;
-                postUpdateUserApi(updateUserParams).then((res) => {
-                    if (res.code === 200) {
-                        ElMessage.success("修改成功");
-                        router.push("/userAndRole");
-                    }
-                });
-            } else {
-                console.log("error", fields);
-            }
-        });
-    }
-};
+
 
 onMounted(() => {
     if (accountStore.behavior === "modify") {
@@ -180,6 +117,26 @@ const back = () => {
 <style scoped lang="scss">
 .userModify {
     font-size: 14px;
+    height: 0 !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+
+    section {
+        height: 0 !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+
+        main {
+            height: 0 !important;
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+
+
+        }
+    }
 }
 
 .el-header {

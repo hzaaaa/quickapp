@@ -123,13 +123,13 @@ const submitLoginForm = (formEl: FormInstance | undefined) => {
           // 4. 添加动态路由
           await initDynamicRouter();
 
-          router.push( "/configQuickApp" );
+          // router.push( "/configQuickApp" );
           // router.push('/');
+
           // 5.跳转页面，如果没有 redirect 跳转到默认页，如果有就携带参数跳转到 redirect
-          // if (!route.query?.redirect) router.push(getFisrtRoute(authStore.authMenuListGet));
-          // else if (route.query?.redirect === "/library") router.push({ name: "library" });
-          // else if (route.query?.redirect === "/report") router.push({ name: "report" });
-          // else router.push({ path: route.query?.redirect as string, query: JSON.parse(route.query?.params as string) });
+          if (!route.query?.redirect) router.push(getFisrtRoute(authStore.authMenuListGet));
+
+          else router.push({ path: route.query?.redirect as string, query: JSON.parse(route.query?.params as string) });
         })
         .catch((err) => {
           console.log("loginApi 接口错误", err);
@@ -162,37 +162,45 @@ const loginPage = reactive({
   align-items: center;
   height: 100%;
   background-size: cover;
+
   &-form {
     box-sizing: border-box;
     padding: 25px 25px 5px;
     border-radius: 6px;
     width: 385px;
     background-color: #ffffff;
+
     &-title {
       margin: 0 auto 30px;
       text-align: center;
       color: #707070;
     }
+
     &-code {
       width: 63%;
     }
+
     &-img {
       position: absolute;
       right: 0;
       cursor: pointer;
     }
+
     &-button {
       margin-top: 10px;
       width: 100%;
       height: 38px;
     }
+
     .el-input {
       height: 38px;
+
       input {
         height: 38px;
       }
     }
   }
+
   &-copyright {
     position: fixed;
     bottom: 0;
