@@ -20,7 +20,8 @@
           </el-form-item>
           <el-form-item label="所属公司主体" prop="companyId">
             <el-select v-model="AppConfigForm.companyId" placeholder="请选择" style="width: 300px">
-              <el-option v-for="d in companyIdOptionalList" :key="d.id" :label="d.name" :value="d.id"></el-option>
+              <el-option v-for="d in companyOptionalList" :key="d.companyId" :label="d.companyName"
+                :value="d.companyId"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="已上架手机" prop="publishedBrandList">
@@ -41,11 +42,12 @@
           <el-form-item label="关联的投放媒体标识" prop="mediaIdentityList">
             <el-select multiple collapse-tags collapse-tags-tooltip v-model="AppConfigForm.mediaIdentityList"
               placeholder="请选择" style="width: 300px">
-              <el-option v-for="phone in phoneList" :key="phone" :label="phone" :value="phone"></el-option>
+              <el-option v-for="item in identityOptionalList" :key="item.identityId" :label="item.identityName"
+                :value="item.identityId"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="以下城市不投放" prop="excludeAdvertiseCityList">
-            <el-cascader :options="options" :props="props" collapse-tags clearable></el-cascader>
+            <!-- <el-cascader :options="cityOptionalList" :props="props" collapse-tags clearable></el-cascader> -->
           </el-form-item>
 
 
@@ -53,33 +55,46 @@
             <div class="">
 
               <div class="" style="margin-top: 8px;">A. 常规时间选定：</div>
-              <MSchedule @receive="onReceive" :curValue="curValue" />
+              <MSchedule v-if="MScheduleShow" @receive="onReceive" :curValue="curValue" />
 
               <div class="" style="margin-top: 8px;">B. 自定义投放时间:</div>
-              <div class="date-list" v-for="(dateItem, index) in AppConfigForm.advertiseTimeBList">
+              <div class="date-input">
 
-                <el-date-picker v-model="dateItem.value1" type="datetime" placeholder="Select date and time" />
+                <el-date-picker v-model="dateInput.value1" type="datetime" placeholder="Select date and time" />
                 至
-                <el-date-picker style="margin-left: 20px;" v-model="dateItem.value2" type="datetime"
+                <el-date-picker style="margin-left: 20px;" v-model="dateInput.value2" type="datetime"
                   placeholder="Select date and time" />
-                <el-icon color="#409EFC" @click="addDate" :size="20"
-                  v-show="index === AppConfigForm.advertiseTimeBList.length - 1">
+                <el-icon color="#409EFC" @click="addDate" :size="20">
                   <CirclePlus />
                 </el-icon>
-                <el-icon color="red" @click="removeDate(index)" :size="20"
-                  v-show="index !== (AppConfigForm.advertiseTimeBList.length - 1)">
-                  <CircleClose />
-                </el-icon>
 
 
+
+              </div>
+              <div class="date-show">
+                <div class="date-item" v-for="(dateItem, index) in AppConfigForm.advertiseTimeBList">
+                  <div class="number" @click='editDate(index)'>
+                    <div class="number1">
+                      {{ dateItem.value1 === null ? '' : moment(dateItem.value1).format('YYYY-MM-DD HH:mm:ss') }}
+                    </div>
+                    -
+                    <div class="number2" style="margin-left: 8px;">
+                      {{ dateItem.value2 === null ? '' : moment(dateItem.value2).format(`YYYY-MM-DD HH:mm:ss`) }}
+                    </div>
+
+                  </div>
+                  <el-icon color="red" @click.stop="removeDate(index)" :size="20">
+                    <CircleClose />
+                  </el-icon>
+                </div>
               </div>
             </div>
           </el-form-item>
 
           <el-form-item label="是否启用的总开关" prop="enabled">
             <el-radio-group v-model="AppConfigForm.enabled" class="ml-4">
-              <el-radio :label="true" size="large">启用</el-radio>
-              <el-radio :label="false" size="large">停用</el-radio>
+              <el-radio :label="1" size="large">启用</el-radio>
+              <el-radio :label="0" size="large">停用</el-radio>
             </el-radio-group>
           </el-form-item>
 
@@ -99,19 +114,63 @@
 </template>
   
 <script setup lang="ts">
+import moment from 'moment';
 import { MSchedule } from '@bytedance-ad/mui-vue3';
 import { useAppConfigStore } from "@/store/appConfig";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import { onMounted, reactive, ref } from "vue";
-import { getRoleListApi } from "@/api/system/role";
-import { getDeptTreeApi } from "@/api/system/dept";
-import { postCreateUserApi, postUpdateUserApi } from "@/api/system/User";
+import { onMounted, reactive, ref, computed, watch, nextTick } from "vue";
+import {
+  getCompanySelectorsApi,
+  getIdentitySelectorsApi,
+  getCitySelectorsApi,
+  editConfigApi,
+
+
+} from "@/api/biz/appConfig";
+
 import { FormInstance, FormRules } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 import {
   CirclePlus,
   CircleClose,
 } from '@element-plus/icons-vue'
+// import { nextTick } from 'process';
+
+//初始化
+const router = useRouter();
+const route = useRoute();
+
+const AppConfigFormRef = ref<FormInstance>();
+let AppConfigForm = reactive({
+  configId: <number>-1,
+  configPid: <number>-1,
+  appName: <string>"",
+  packageName: <string>"",
+  companyId: <number | null>null,
+  // companyId: <number | null>null,
+
+  publishedBrand: <string>"",
+  publishedBrandList: <any[]>[],
+  activatedBrand: <string>"",
+  activatedBrandList: <any[]>[],
+  operatedBrand: <string>"",
+  operatedBrandList: <any[]>[],
+
+
+
+  advertiseTimeA: <string>'',
+  advertiseTimeB: <string>'',
+  advertiseTimeBList: <any[]>[],
+
+  enabled: <number>0,//是否启用. 0-未启用; 1-已启用
+  remark: <string>'',
+
+  mediaIdentityList: <any[]>[],
+  mediaIdentityIds: <string>'',
+  excludeAdvertiseCityList: <any[]>[],
+  excludeCityIds: <string>'',
+
+});
 
 const props = reactive({ multiple: true });
 const options = reactive([{
@@ -161,23 +220,54 @@ const options = reactive([{
     ]
   }]
 }])
-// const dateList = reactive([{
-//   value1: '',
-//   value2: '',
-// }])
+
+const MScheduleShow = ref(false)
+
+
+//时间B相关逻辑
+let dateInput = reactive({
+  value1: <Date | null>null,
+  value2: <Date | null>null,
+})
 const addDate = () => {
-  AppConfigForm.advertiseTimeBList.push({
-    value1: '',
-    value2: '',
-  })
+  if (dateInput.value1 || dateInput.value2) {//点击编辑时有时间存在强其添加进列表中
+    AppConfigForm.advertiseTimeBList.push(dateInput)
+    dateInput = reactive({
+      value1: <Date | null>null,
+      value2: <Date | null>null,
+    })
+  }
+  // console.log(AppConfigForm.advertiseTimeBList);
+  // AppConfigForm.advertiseTimeA = '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111111111000000000000000000000000000000000000001111111111000000000000000000000000000000000000001111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+
+
+}
+const editDate = (index: number) => {
+  //点击编辑时有时间存在将其添加进列表中
+  addDate();
+  dateInput = (AppConfigForm.advertiseTimeBList.splice(index, 1))[0];
 }
 const removeDate = (index: number) => {
   AppConfigForm.advertiseTimeBList.splice(index, 1)
 }
 
+
+//时间A相关逻辑
 let curValue = ref({
   schedule_time: ""
 })
+// watch(
+//   AppConfigForm,
+//   (newValue, oldValue) => {
+//     debugger
+//     curValue.value.schedule_time = newValue.advertiseTimeA;
+//     MScheduleShow.value = true;
+//     // schedule_time: newValue
+
+//   }, {
+//   deep: true,
+
+// })
 const onReceive = (value: any) => {
   // 不能缺少这一步
   // debugger
@@ -187,39 +277,23 @@ const onReceive = (value: any) => {
 
 };
 
-const router = useRouter();
-const route = useRoute();
 
 
 
-const AppConfigFormRef = ref<FormInstance>();
-const AppConfigForm = reactive({
-  id: <number>-1,
-  appName: <string>"",
-  packageName: <string>"",
-  companyId: <number | null>null,
 
-  publishedBrand: <string>"",
-  publishedBrandList: <any[]>[],
-  activatedBrand: <string>"",
-  activatedBrandList: <any[]>[],
-  operatedBrand: <string>"",
-  operatedBrandList: <any[]>[],
-
-  mediaIdentityList: <any[]>[],
-  excludeAdvertiseCityList: <any[]>[],
-
-  advertiseTimeA: <string>'',
-  advertiseTimeB: <string>'',
-  advertiseTimeBList: <any[]>[],
-
-  enabled: <boolean>false,
-  remark: <string>'',
-
-});
-addDate();
 const phoneList = ref<any>(['VIVO', 'OPPO', '小米', '华为']);
-const companyIdOptionalList = ref<any>([]);
+let companyOptionalList = ref<any>([]);
+let identityOptionalList = ref<any>([]);
+let cityOptionalList = ref<any>([]);
+
+companyOptionalList = ref<any>([{
+  companyId: 1,
+  companyName: 1,
+}]);
+identityOptionalList = ref<any>([{
+  identityId: 1,
+  identityName: 1,
+}]);
 
 const validateappName = (rule: any, value: string, callback: any) => {
   // debugger
@@ -256,13 +330,6 @@ const validateAppConfigParamArray2 = (name: string) => {
   };
 }
 
-
-
-
-
-
-
-
 const AppConfigFormRules = reactive<FormRules>({
   appName: [{ validator: validateappName, trigger: "blur" }],
   packageName: [{ validator: validatepackageName, trigger: "blur" }],
@@ -270,21 +337,21 @@ const AppConfigFormRules = reactive<FormRules>({
 
   publishedBrandList: [{ validator: validateAppConfigParamArray1('已上架手机'), trigger: "change" }],
   activatedBrandList: [{ validator: validateAppConfigParamArray1('已开通广告的手机'), trigger: "change" }],
-  operatedBrandList: [{ validator: validateAppConfigParamArray1('启动运营的手机'), trigger: "change" }],
+  operatedBrandList: [{ validator: validateAppConfigParamArray2('启动运营的手机'), trigger: "change" }],
   mediaIdentityList: [{ validator: validateAppConfigParamArray2('关联的投放媒体标识'), trigger: "change" }],
   excludeAdvertiseCityList: [{ validator: validateAppConfigParamArray1('以下城市不投放'), trigger: "change" }],
-
-
-
-
-
-
 
 });
 
 
-getDeptTreeApi({ id: 8 }).then((res) => {
-  companyIdOptionalList.value = res.data[0].childrenList;
+getCompanySelectorsApi({}).then((res) => {
+  companyOptionalList.value = res.data.list;
+});
+getIdentitySelectorsApi({}).then((res) => {
+  identityOptionalList.value = res.data.list;
+});
+getCitySelectorsApi({}).then((res) => {
+  cityOptionalList.value = res.data.list;
 });
 
 const AppConfigStore = useAppConfigStore();
@@ -292,38 +359,70 @@ const cancleModifyAppConfig = () => {
   console.log("cancleModifyAppConfig", AppConfigForm);
   router.back();
 };
+
+const beforeSubmit = () => {
+  AppConfigForm.publishedBrand = AppConfigForm.publishedBrandList.toString();
+  AppConfigForm.activatedBrand = AppConfigForm.activatedBrandList.toString();
+  AppConfigForm.operatedBrand = AppConfigForm.operatedBrandList.toString();
+
+  AppConfigForm.mediaIdentityIds = AppConfigForm.mediaIdentityList.toString();
+  //城市
+  // AppConfigForm.excludeCityIds = AppConfigForm.excludeAdvertiseCityList.toString();
+
+  //timeB
+  let strList = <string[]>[];
+  AppConfigForm.advertiseTimeBList.forEach(item => {
+    let str = '';
+    if (item.value1) {
+      str += moment(item.value1).valueOf()
+    }
+    str += '-';
+    if (item.value2) {
+      str += moment(item.value2).valueOf()
+    }
+    strList.push(str);
+  });
+  AppConfigForm.advertiseTimeB = strList.toString();
+
+
+
+}
 const saveModifyAppConfig = async (formEl: FormInstance | undefined) => {
   console.log("saveModifyAppConfig", formEl);
   if (AppConfigStore.behavior !== "modify") {
-    // 添加人员
+    // 添加配置
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
       if (valid) {
         console.log("submit", AppConfigForm);
-        // postCreateAppConfigApi(AppConfigForm).then((res) => {
-        //   console.log("postCreateAppConfigApi", res);
-        //   if (res.code === 200) {
-        //     ElMessage.success("创建成功");
-        //     router.push("/account/AppConfig");
-        //   }
-        // });
+
+
+        beforeSubmit();
+        editConfigApi({
+          action: 0,//新增
+          ...AppConfigForm
+        }).then((res) => {
+          console.log("editConfigApi", res);
+          if (res.code === 200) {
+            ElMessage.success("创建成功");
+            router.push("/account/AppConfig");
+          }
+        });
       } else {
         console.log("error", fields);
       }
     });
   } else {
-    // 修改人员
+    // 修改配置
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
       if (valid) {
-        let { ...otherAppConfigForm } = AppConfigForm; // eslint-disable-line
-        let updateAppConfigParams = <any>{
-          ...otherAppConfigForm,
-          id: AppConfigStore.AppConfigInfoGet.id,
 
-        };
-        // if (password) updateAppConfigParams.password = password;
-        postUpdateUserApi(updateAppConfigParams).then((res) => {
+        beforeSubmit();
+        editConfigApi({
+          action: 1,//编辑修改
+          ...AppConfigForm
+        }).then((res) => {
           if (res.code === 200) {
             ElMessage.success("修改成功");
             router.push("/account/AppConfig");
@@ -338,13 +437,20 @@ const saveModifyAppConfig = async (formEl: FormInstance | undefined) => {
 
 onMounted(() => {
   if (AppConfigStore.behavior === "modify") {
-    const { appName, packageName, companyId } = AppConfigStore.modifyAppConfigInfo;
-    if (appName) AppConfigForm.appName = appName;
-    if (packageName) AppConfigForm.packageName = packageName;
+    // debugger
+    AppConfigForm = Object.assign(AppConfigForm, AppConfigStore.modifyAppConfigInfo);
+    curValue.value.schedule_time = AppConfigForm.advertiseTimeA;
+    // debugger
+  } else {
 
-
-    if (companyId) AppConfigForm.companyId = companyId;
   }
+  nextTick(() => {
+    MScheduleShow.value = true;
+    // nextTick(() => {
+    //   // debugger
+
+    // })
+  })
 });
 
 const back = () => {
@@ -354,9 +460,42 @@ const back = () => {
 </script>
   
 <style scoped lang="scss">
-.date-list {
+.date-input {
   display: flex;
   align-items: center;
+}
+
+.date-show {
+  margin-top: 5px;
+  padding: 5px;
+  height: 120px;
+  border: 1px solid #f2f2f2;
+  overflow: auto;
+
+  .date-item {
+    display: flex;
+    align-items: center;
+
+    .number {
+      flex: 1;
+      width: 0;
+      display: flex;
+      align-items: center;
+
+      .number1,
+      .number2 {
+        width: 150px;
+      }
+    }
+
+    &:hover {
+      background-color: #ecf5ff;
+    }
+
+    .el-icon {
+      margin-left: 5px;
+    }
+  }
 }
 
 .AppConfigModify {

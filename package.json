@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
-    
     "preview": "vite preview",
     "prepare": "husky install",
     "commit": "cz",
@@ -19,6 +18,7 @@
     "axios": "^1.2.2",
     "echarts": "^5.4.1",
     "element-plus": "^2.2.28",
+    "moment": "^2.29.4",
     "pinia": "^2.0.28",
     "pinia-plugin-persistedstate": "^3.0.2",
     "qs": "^6.11.0",
