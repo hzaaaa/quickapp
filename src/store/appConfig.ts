@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-// AppConfigStore 账户相关存储
+// AppConfigStore AppConfig相关存储
 export const useAppConfigStore = defineStore({
     // id: 必须，在所有 Store 中唯一
     id: "AppConfigState",

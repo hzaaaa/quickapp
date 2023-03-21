@@ -32,8 +32,8 @@
 
       </el-table>
     </el-config-provider>
-    <el-pagination layout="prev, pager, next" :page-size="pageParams.pageSize" :total="pageParams.total"
-      @current-change="handlePageChange" :hide-on-single-page="true">
+    <el-pagination layout="prev, pager, next" :current-page="pageParams.pageNum" :page-size="pageParams.pageSize"
+      :total="pageParams.total" @current-change="handlePageChange" :hide-on-single-page="true">
     </el-pagination>
   </div>
 </template>
@@ -65,36 +65,61 @@ const AppConfigStore = useAppConfigStore();
 /**
  * 账户首页表格区
  */
+/**
+ * 分页相关
+ */
+const pageParams = reactive({
+  pageNum: 1,
+  pageSize: 50,
+  total: 213,
+});
+const handlePageChange = (pageNum: number) => {
+  console.log("handlePageChange", pageNum);
+  let params = {
+    pageNum: pageNum,
+    pageSize: pageParams.pageSize,
+  };
+  getConfigListApi(params).then((res: any) => {
+    tableDataList.value = res.data.list;
+    pageParams.total = res.data.total;
+  });
+};
 const tableDataList = ref<any>([]);
 
 let params = {
   pageNum: 1,
   pageSize: 50,
-
-  // companyId: 8,
-  // accountNameOrId: "",
 };
-getConfigListApi(params).then((res: any) => {
-  console.log("getConfigListApi", params);
-  tableDataList.value = res.data.list;
-  // debugger
-  tableDataList.value = [{ configPid: '1' }]
-  tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-  tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-  tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-  tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-  tableDataList.value = [...tableDataList.value, ...tableDataList.value];
 
-  //debugger
-  pageParams.total = res.data.total;
-});
+const getTableList = () => {
+  getConfigListApi(params).then((res) => {
+    console.log("getConfigListApi", params);
+    tableDataList.value = res.data.list;
+
+    pageParams.total = res.data.total;
+  });
+}
+getTableList();
+// getConfigListApi(params).then((res: any) => {
+//   console.log("getConfigListApi", params);
+//   tableDataList.value = res.data.list;
+//   // debugger
+//   tableDataList.value = [{ configPid: '1' }]
+//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
+//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
+//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
+//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
+//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
+
+//   //debugger
+//   pageParams.total = res.data.total;
+// });
 tableDataList.value = [{ configPid: '1' }]
 tableDataList.value = [...tableDataList.value, ...tableDataList.value];
 tableDataList.value = [...tableDataList.value, ...tableDataList.value];
 tableDataList.value = [...tableDataList.value, ...tableDataList.value];
 tableDataList.value = [...tableDataList.value, ...tableDataList.value];
 tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-
 
 
 
@@ -168,6 +193,7 @@ const removeConfig = (row: any) => {
         console.log("postUpdateUserApi", res);
         if (res.msg === 'success') {
           ElMessage.success('删除配置成功');
+          getTableList();
         } else {
           ElMessage.error(res.msg);
         }
@@ -180,28 +206,7 @@ const removeConfig = (row: any) => {
 
 
 
-/**
- * 分页相关
- */
-const pageParams = reactive({
-  pageNum: 1,
-  pageSize: 50,
-  total: 200,
-});
-const handlePageChange = (pageNum: number) => {
-  console.log("handlePageChange", pageNum);
-  let params = {
-    pageNum: pageNum,
-    pageSize: pageParams.pageSize,
 
-    // companyId: 8,
-    // accountNameOrId: "",
-  };
-  getConfigListApi(params).then((res: any) => {
-    tableDataList.value = res.data.list;
-    pageParams.total = res.data.total;
-  });
-};
 </script>
   
 <style scoped lang="scss">

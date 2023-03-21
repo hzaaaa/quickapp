@@ -60,10 +60,9 @@
               <div class="" style="margin-top: 8px;">B. 自定义投放时间:</div>
               <div class="date-input">
 
-                <el-date-picker v-model="dateInput.value1" type="datetime" placeholder="Select date and time" />
+                <el-date-picker v-model="dateInput.value1" type="datetime" placeholder="" />
                 至
-                <el-date-picker style="margin-left: 20px;" v-model="dateInput.value2" type="datetime"
-                  placeholder="Select date and time" />
+                <el-date-picker style="margin-left: 20px;" v-model="dateInput.value2" type="datetime" placeholder="" />
                 <el-icon color="#409EFC" @click="addDate" :size="20">
                   <CirclePlus />
                 </el-icon>
@@ -99,7 +98,7 @@
           </el-form-item>
 
           <el-form-item label="备注" prop="remark">
-            <el-input v-model="AppConfigForm.remark" :rows="5" type="textarea" placeholder="Please input" />
+            <el-input v-model="AppConfigForm.remark" :rows="5" type="textarea" placeholder="请输入" />
 
           </el-form-item>
 
@@ -405,7 +404,7 @@ const saveModifyAppConfig = async (formEl: FormInstance | undefined) => {
           console.log("editConfigApi", res);
           if (res.code === 200) {
             ElMessage.success("创建成功");
-            router.push("/account/AppConfig");
+            router.push("/configQuickApp");
           }
         });
       } else {
@@ -425,7 +424,7 @@ const saveModifyAppConfig = async (formEl: FormInstance | undefined) => {
         }).then((res) => {
           if (res.code === 200) {
             ElMessage.success("修改成功");
-            router.push("/account/AppConfig");
+            router.push("/configQuickApp");
           }
         });
       } else {

@@ -5,28 +5,27 @@
                 <el-icon class="back-icon pointer" @click="back">
                     <ArrowLeft />
                 </el-icon>
-                <span> {{ route.query.type === "add" ? "新增" : "编辑" }}运营快应用的企业主体信息 </span>
+                <span> {{ CompanyStore.behavior === "add" ? "新增" : "编辑" }}运营快应用的企业主体信息 </span>
             </el-header>
             <el-main>
-                <el-form ref="userFormRef" :model="userForm" :rules="userFormRules" label-width="150px"
+                <el-form ref="CompanyFormRef" :model="CompanyForm" :rules="CompanyFormRules" label-width="150px"
                     label-position="right">
-                    <el-form-item label="公司全称" prop="userName">
-                        <div v-if="route.query.type === 'modify' && accountStore.modifyUserInfo.userName">{{
-                            userForm.userName }}
-                        </div>
-                        <el-input v-else v-model="userForm.userName" placeholder="请输入5-20位英文+数字组合的公司全称"
+                    <el-form-item label="公司全称" prop="companyName">
+
+                        <el-input :disabled="CompanyStore.behavior === 'modify'" v-model="CompanyForm.companyName"
+                            placeholder="请输入公司全称" style="width: 300px"></el-input>
+                    </el-form-item>
+                    <el-form-item label="公司简称" prop="companyAbbr">
+                        <el-input v-model="CompanyForm.companyAbbr" placeholder="请输入公司简称" style="width: 300px"></el-input>
+                    </el-form-item>
+                    <el-form-item label="公司标识" prop="companyIdentity">
+                        <el-input v-model="CompanyForm.companyIdentity" placeholder="请输入公司标识"
                             style="width: 300px"></el-input>
                     </el-form-item>
-                    <el-form-item label="公司简称" prop="nickName">
-                        <el-input v-model="userForm.nickName" placeholder="请输入公司简称" style="width: 300px"></el-input>
-                    </el-form-item>
-                    <el-form-item label="公司标识" prop="nickName">
-                        <el-input v-model="userForm.nickName" placeholder="请输入公司标识" style="width: 300px"></el-input>
-                    </el-form-item>
-                    <el-form-item label="是否启用该公司" prop="roleIdList">
-                        <el-radio-group v-model="userForm.roleIdList" class="ml-4">
-                            <el-radio label="1" size="large">启用</el-radio>
-                            <el-radio label="2" size="large">停用</el-radio>
+                    <el-form-item label="是否启用该公司" prop="enabled">
+                        <el-radio-group v-model="CompanyForm.enabled" class="ml-4">
+                            <el-radio :label="1" size="large">启用</el-radio>
+                            <el-radio :label="0" size="large">停用</el-radio>
                         </el-radio-group>
                     </el-form-item>
 
@@ -35,15 +34,15 @@
 
 
 
-                    <el-form-item label="备注" prop="password">
-                        <el-input v-model="userForm.userName" :rows="5" type="textarea" placeholder="Please input" />
+                    <el-form-item label="备注" prop="remark">
+                        <el-input v-model="CompanyForm.remark" :rows="5" type="textarea" placeholder="请输入" />
 
                     </el-form-item>
 
                 </el-form>
                 <el-row>
-                    <el-button @click="cancleModifyUser">取消</el-button>
-                    <el-button type="primary" @click="saveModifyUser(userFormRef)">确定</el-button>
+                    <el-button @click="cancleModifyCompany">取消</el-button>
+                    <el-button type="primary" @click="saveModifyCompany(CompanyFormRef)">确定</el-button>
                 </el-row>
             </el-main>
         </el-container>
@@ -51,141 +50,99 @@
 </template>
     
 <script setup lang="ts">
-import { MSchedule } from '@bytedance-ad/mui-vue3';
-import { useAccountStore } from "@/store/account";
+import moment from 'moment';
+import { Picture as IconPicture } from '@element-plus/icons-vue'
+import { useCompanyStore } from "@/store/company";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import { onMounted, reactive, ref } from "vue";
-import { getRoleListApi } from "@/api/system/role";
-import { getDeptTreeApi } from "@/api/system/dept";
-import { postCreateUserApi, postUpdateUserApi } from "@/api/system/user";
+import { onMounted, reactive, ref, computed, watch, nextTick } from "vue";
+import {
+
+    editCompanyApi,
+
+
+} from "@/api/biz/company";
+
 import { FormInstance, FormRules } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 
-import { ElMessage } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
 
-import type { UploadProps } from 'element-plus'
-
-const imageUrl = ref('')
-
-const curValue = ref({
-    schedule_time: ''
-})
-const onReceive = (value: any) => {
-    // 不能缺少这一步
-    // debugger
-    curValue.value = value
-};
-
+//初始化
 const router = useRouter();
 const route = useRoute();
 
+const CompanyFormRef = ref<FormInstance>();
+let CompanyForm = reactive({
+    companyId: <number>-1,
 
+    companyName: <string>"",
+    companyAbbr: <string>"",
+    companyIdentity: <string>"",
 
-const handleAvatarSuccess: UploadProps['onSuccess'] = (
-    response,
-    uploadFile
-) => {
-    imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-}
+    enabled: <number>0,//是否启用. 0-未启用; 1-已启用
+    remark: <string>'',
 
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-    if (rawFile.type !== 'image/jpeg') {
-        ElMessage.error('Avatar picture must be JPG format!')
-        return false
-    } else if (rawFile.size / 1024 / 1024 > 2) {
-        ElMessage.error('Avatar picture size can not exceed 2MB!')
-        return false
-    }
-    return true
-}
-
-
-const userFormRef = ref<FormInstance>();
-const userForm = reactive({
-    userName: "",
-    nickName: "",
-    email: "",
-    password: "",
-    roleIdList: <number[]>[],
-    deptId: <null | number>null,
 });
-const OptionalRoleList = ref<any>([]);
-const OptionalDeptList = ref<any>([]);
-const validateUserName = (rule: any, value: any, callback: any) => {
-    if (route.query.type === "modify" && accountStore.modifyUserInfo.userName) return callback();
-    if (!value) return callback(new Error("请输入账号"));
-    const regexp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{5,20}$/;
-    if (!regexp.test(value)) callback(new Error("账号必须包含字母和数字，且在5~20位之间"));
+
+
+
+const MScheduleShow = ref(false)
+
+/* 校验相关 */
+const validatecompanyName = (rule: any, value: string, callback: any) => {
+    if (!value) return callback(new Error("请输入公司名称"));
+    // debugger
+
     else return callback();
 };
-const validateNickName = (rule: any, value: any, callback: any) => {
+const validatecompanyAbbr = (rule: any, value: any, callback: any) => {
     if (!value) return callback(new Error("请输入公司简称"));
-    if (value.length > 20) callback(new Error("公司简称不得超过20字"));
+
     else return callback();
 };
-const validateEmail = (rule: any, value: any, callback: any) => {
-    if (!value) return callback(new Error("请输入邮箱"));
-    const regexp =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!regexp.test(value)) callback(new Error("请输入正常的邮箱号"));
-    else return callback();
-};
-const validatePass = (rule: any, value: any, callback: any) => {
-    if (route.query.type === "modify") return callback();
-    if (!value) return callback(new Error("请输入密码"));
-    const regexp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/;
-    if (!regexp.test(value)) callback(new Error("密码必须包含字母和数字，且在6~20位之间"));
-    else return callback();
-};
-const validateRole = (rule: any, value: any, callback: any) => {
-    // if (route.query.type === "modify") return callback();
-    if (!value || (Array.isArray(value) && !value.length)) return callback(new Error("请至少选择一个已上架手机"));
-    else return callback();
-};
-const validateDept = (rule: any, value: any, callback: any) => {
-    if (!value) return callback(new Error("请至少选择一个部门"));
+const validatecompanyIdentity = (rule: any, value: any, callback: any) => {
+    if (!value) return callback(new Error("请输入公司标识"));
+
     else return callback();
 };
 
-const userFormRules = reactive<FormRules>({
-    userName: [{ validator: validateUserName, trigger: "blur" }],
-    nickName: [{ validator: validateNickName, trigger: "blur" }],
-    email: [{ validator: validateEmail, trigger: "blur" }],
-    password: [{ validator: validatePass, trigger: "blur" }],
-    roleIdList: [{ validator: validateRole, trigger: "change" }],
-    deptId: [{ validator: validateDept, trigger: "change" }],
+const CompanyFormRules = reactive<FormRules>({
+    companyName: [{ validator: validatecompanyName, trigger: "blur" }],
+    companyAbbr: [{ validator: validatecompanyAbbr, trigger: "blur" }],
+    companyIdentity: [{ validator: validatecompanyIdentity, trigger: "blur" }],
 });
 
-getRoleListApi().then((res) => {
-    let roleNameList = ["管理员", "项目负责人", "编导", "摄像", "剪辑", "运营"];
-    // OptionalRoleList.value = res.data.list.filter((role: any) => roleNameList.includes(role.name)).reverse();
-    OptionalRoleList.value = res.data.list
-        .filter((role: any) => roleNameList.includes(role.name))
-        .sort((a: any, b: any) => a.id - b.id);
-});
-getDeptTreeApi({ id: 8 }).then((res) => {
-    OptionalDeptList.value = res.data[0].childrenList;
-});
 
-const accountStore = useAccountStore();
-const cancleModifyUser = () => {
-    console.log("cancleModifyUser", userForm);
+
+
+const CompanyStore = useCompanyStore();
+const cancleModifyCompany = () => {
+    console.log("cancleModifyCompany", CompanyForm);
     router.back();
 };
-const saveModifyUser = async (formEl: FormInstance | undefined) => {
-    console.log("saveModifyUser", formEl);
-    if (route.query.type !== "modify") {
-        // 添加人员
+
+const beforeSubmit = () => {
+
+}
+const saveModifyCompany = async (formEl: FormInstance | undefined) => {
+    console.log("saveModifyCompany", formEl);
+    if (CompanyStore.behavior !== "modify") {
+        // 添加配置
         if (!formEl) return;
         await formEl.validate((valid, fields) => {
             if (valid) {
-                console.log("submit", userForm);
-                postCreateUserApi(userForm).then((res) => {
-                    console.log("postCreateUserApi", res);
+                console.log("submit", CompanyForm);
+
+
+                beforeSubmit();
+                editCompanyApi({
+                    action: 0,//新增
+                    ...CompanyForm
+                }).then((res) => {
+                    console.log("editCompanyApi", res);
                     if (res.code === 200) {
                         ElMessage.success("创建成功");
-                        router.push("/account/user");
+                        router.push("/operationSubjectConfiguration");
+
                     }
                 });
             } else {
@@ -193,21 +150,19 @@ const saveModifyUser = async (formEl: FormInstance | undefined) => {
             }
         });
     } else {
-        // 修改人员
+        // 修改配置
         if (!formEl) return;
         await formEl.validate((valid, fields) => {
             if (valid) {
-                let { password, ...otherUserForm } = userForm; // eslint-disable-line
-                let updateUserParams = <any>{
-                    ...otherUserForm,
-                    userId: accountStore.userInfoGet.userId,
-                    enabled: accountStore.userInfoGet.enabled,
-                };
-                if (password) updateUserParams.password = password;
-                postUpdateUserApi(updateUserParams).then((res) => {
+
+                beforeSubmit();
+                editCompanyApi({
+                    action: 1,//编辑修改
+                    ...CompanyForm
+                }).then((res) => {
                     if (res.code === 200) {
                         ElMessage.success("修改成功");
-                        router.push("/account/user");
+                        router.push("/operationSubjectConfiguration");
                     }
                 });
             } else {
@@ -218,14 +173,21 @@ const saveModifyUser = async (formEl: FormInstance | undefined) => {
 };
 
 onMounted(() => {
-    if (route.query.type === "modify") {
-        const { userName, nickName, email, roleList, deptId } = accountStore.modifyUserInfo;
-        if (userName) userForm.userName = userName;
-        if (nickName) userForm.nickName = nickName;
-        if (email) userForm.email = email;
-        if (roleList) userForm.roleIdList = roleList.map((role) => role.roleId);
-        if (deptId) userForm.deptId = deptId;
+    if (CompanyStore.behavior === "modify") {
+        // debugger
+        CompanyForm = Object.assign(CompanyForm, CompanyStore.modifyCompanyInfo);
+
+        // debugger
+    } else {
+
     }
+    nextTick(() => {
+        MScheduleShow.value = true;
+        // nextTick(() => {
+        //   // debugger
+
+        // })
+    })
 });
 
 const back = () => {

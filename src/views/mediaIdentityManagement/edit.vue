@@ -5,67 +5,77 @@
                 <el-icon class="back-icon pointer" @click="back">
                     <ArrowLeft />
                 </el-icon>
-                <span> {{ route.query.type === "add" ? "新增" : "编辑" }}一个投放广告的媒体信息 </span>
+                <span> {{ IdentityStore.behavior === "add" ? "新增" : "编辑" }}一个投放广告的媒体信息 </span>
             </el-header>
             <el-main>
-                <el-form ref="userFormRef" :model="userForm" :rules="userFormRules" label-width="150px"
+                <el-form ref="IdentityFormRef" :model="IdentityForm" :rules="IdentityFormRules" label-width="150px"
                     label-position="right">
-                    <el-form-item label="媒体名称" prop="userName">
-                        <div v-if="route.query.type === 'modify' && accountStore.modifyUserInfo.userName">{{
-                            userForm.userName }}
-                        </div>
-                        <el-input v-else v-model="userForm.userName" placeholder="请输入5-20位英文+数字组合的媒体名称"
+                    <el-form-item label="媒体名称" prop="mediaName">
+
+                        <el-input :disabled="IdentityStore.behavior === 'modify'" v-model="IdentityForm.mediaName"
+                            placeholder="请输入媒体名称" style="width: 300px"></el-input>
+                    </el-form-item>
+                    <el-form-item label="媒体标识" prop="mediaIdentity">
+                        <el-input v-model="IdentityForm.mediaIdentity" placeholder="请输入媒体标识"
                             style="width: 300px"></el-input>
                     </el-form-item>
-                    <el-form-item label="媒体标识" prop="nickName">
-                        <el-input v-model="userForm.nickName" placeholder="请输入媒体标识" style="width: 300px"></el-input>
-                    </el-form-item>
-                    <el-form-item label="广告位的类型" prop="roleIdList">
-                        <el-radio-group v-model="userForm.roleIdList" class="ml-4">
-                            <el-radio label="1" size="large">Option 1</el-radio>
-                            <el-radio label="2" size="large">Option 2</el-radio>
+                    <el-form-item label="广告位的类型" prop="adsType">
+                        <el-radio-group v-model="IdentityForm.adsType" class="ml-4">
+                            <el-radio :label="0" size="large">Banner</el-radio>
+                            <el-radio :label="1" size="large">弹窗</el-radio>
+                            <el-radio :label="2" size="large">信息流</el-radio>
+                            <el-radio :label="3" size="large">开屏</el-radio>
+                            <el-radio :label="4" size="large">激励</el-radio>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="广告素材链接" prop="nickName">
-                        <el-input v-model="userForm.nickName" placeholder="请输入媒体标识" style="width: 300px"></el-input>
+                    <el-form-item label="广告素材链接" prop="adsLink">
+                        <el-input v-model="IdentityForm.adsLink" placeholder="请输入广告素材链接" style="width: 300px"></el-input>
                     </el-form-item>
-                    <el-form-item label="广告素材预览" prop="nickName">
-                        <el-upload class="avatar-uploader"
+                    <el-form-item label="广告素材预览">
+                        <el-image style="width: 300px; height: 200px" fit="contain" alt="暂无图片" :src="IdentityForm.adsLink">
+                            <template #error>
+                                <div class="image-slot">
+                                    <el-icon><icon-picture /></el-icon>
+                                </div>
+                            </template>
+                        </el-image>
+                        <!-- <el-upload class="avatar-uploader"
                             action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15" :show-file-list="false"
                             :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
                             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
                             <el-icon v-else class="avatar-uploader-icon">
                                 <Plus />
                             </el-icon>
-                        </el-upload>
+                        </el-upload> -->
                     </el-form-item>
-                    <el-form-item label="广告所在页面" prop="roleIdList">
-                        <el-radio-group v-model="userForm.roleIdList" class="ml-4">
-                            <el-radio label="1" size="large">Option 1</el-radio>
-                            <el-radio label="2" size="large">Option 2</el-radio>
-                            <el-radio label="3" size="large">其它</el-radio>
+                    <el-form-item label="广告所在页面" prop="adsPageShow">
+                        <el-radio-group v-model="IdentityForm.adsPageShow" class="ml-4">
+                            <el-radio label="APP首屏" size="large">APP首屏</el-radio>
+                            <el-radio label="网站首页" size="large">网站首页</el-radio>
+                            <el-radio label="频道二级页" size="large">频道二级页</el-radio>
+                            <el-radio label="其它" size="large">其它</el-radio>
                         </el-radio-group>
-                        <el-input v-model="userForm.nickName" placeholder=""
-                            style="width: 120px;margin-left:15px"></el-input>
+                        <el-input v-show="IdentityForm.adsPageShow === '其它'" v-model="IdentityForm.adsPageOther"
+                            placeholder="" style="width: 120px;margin-left:15px"></el-input>
                     </el-form-item>
-                    <el-form-item label="买量的量级" prop="nickName">
-                        <el-input v-model="userForm.nickName" placeholder="请输入媒体标识"
-                            style="width: 300px;margin-right:15px"></el-input> PV / 天
+                    <el-form-item label="买量的量级" prop="purchasingQuantity">
+                        <el-input-number :controls="false" v-model="IdentityForm.purchasingQuantity" placeholder="请输入买量的量级"
+                            style="width: 300px;margin-right:15px"></el-input-number> PV / 天
                     </el-form-item>
 
 
 
 
 
-                    <el-form-item label="备注" prop="password">
-                        <el-input v-model="userForm.userName" :rows="5" type="textarea" placeholder="Please input" />
+                    <el-form-item label="备注" prop="remark">
+                        <el-input v-model="IdentityForm.remark" :rows="5" type="textarea" placeholder="请输入备注" />
 
                     </el-form-item>
 
                 </el-form>
                 <el-row>
-                    <el-button @click="cancleModifyUser">取消</el-button>
-                    <el-button type="primary" @click="saveModifyUser(userFormRef)">确定</el-button>
+                    <el-button @click="cancleModifyIdentity">取消</el-button>
+                    <el-button type="primary" v-throttle="() => saveModifyIdentity(IdentityFormRef)">确定</el-button>
                 </el-row>
             </el-main>
         </el-container>
@@ -73,141 +83,120 @@
 </template>
     
 <script setup lang="ts">
-import { MSchedule } from '@bytedance-ad/mui-vue3';
-import { useAccountStore } from "@/store/account";
+import moment from 'moment';
+import { Picture as IconPicture } from '@element-plus/icons-vue'
+import { useIdentityStore } from "@/store/identity";
 import { ArrowLeft } from "@element-plus/icons-vue";
-import { onMounted, reactive, ref } from "vue";
-import { getRoleListApi } from "@/api/system/role";
-import { getDeptTreeApi } from "@/api/system/dept";
-import { postCreateUserApi, postUpdateUserApi } from "@/api/system/user";
+import { onMounted, reactive, ref, computed, watch, nextTick } from "vue";
+import {
+
+    editIdentityApi,
+
+
+} from "@/api/biz/identity";
+
 import { FormInstance, FormRules } from "element-plus";
 import { useRouter, useRoute } from "vue-router";
 
-import { ElMessage } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
 
-import type { UploadProps } from 'element-plus'
-
-const imageUrl = ref('')
-
-const curValue = ref({
-    schedule_time: ''
-})
-const onReceive = (value: any) => {
-    // 不能缺少这一步
-    // debugger
-    curValue.value = value
-};
-
+//初始化
 const router = useRouter();
 const route = useRoute();
 
+const IdentityFormRef = ref<FormInstance>();
+let IdentityForm = reactive({
+    identityId: <number>-1,
 
+    mediaName: <string>"",
+    mediaIdentity: <string>"",
 
-const handleAvatarSuccess: UploadProps['onSuccess'] = (
-    response,
-    uploadFile
-) => {
-    imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-}
+    // companyId: <number | null>null,
 
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-    if (rawFile.type !== 'image/jpeg') {
-        ElMessage.error('Avatar picture must be JPG format!')
-        return false
-    } else if (rawFile.size / 1024 / 1024 > 2) {
-        ElMessage.error('Avatar picture size can not exceed 2MB!')
-        return false
-    }
-    return true
-}
+    adsType: <number>0,//0-Banner;1-弹窗; 2-信息流; 3-开屏; 4-激励
+    adsLink: <string>'',
+    adsPage: <string>'',
+    adsPageShow: <string>'',
+    adsPageOther: <string>'',
+    purchasingQuantity: <number | null>null,
+    remark: <string>'',
 
-
-const userFormRef = ref<FormInstance>();
-const userForm = reactive({
-    userName: "",
-    nickName: "",
-    email: "",
-    password: "",
-    roleIdList: <number[]>[],
-    deptId: <null | number>null,
 });
-const OptionalRoleList = ref<any>([]);
-const OptionalDeptList = ref<any>([]);
-const validateUserName = (rule: any, value: any, callback: any) => {
-    if (route.query.type === "modify" && accountStore.modifyUserInfo.userName) return callback();
-    if (!value) return callback(new Error("请输入账号"));
-    const regexp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{5,20}$/;
-    if (!regexp.test(value)) callback(new Error("账号必须包含字母和数字，且在5~20位之间"));
+
+
+
+const MScheduleShow = ref(false)
+
+/* 校验相关 */
+const validatemediaName = (rule: any, value: string, callback: any) => {
+    // debugger
+    if (IdentityStore.behavior === "modify" && IdentityStore.modifyIdentityInfo.mediaName) return callback();
+
+    if (!value) return callback(new Error("请输入媒体名称"));
+    // debugger
+    if (value.length > 20) callback(new Error("媒体名称不得超过20字"));
     else return callback();
 };
-const validateNickName = (rule: any, value: any, callback: any) => {
+const validatemediaIdentity = (rule: any, value: any, callback: any) => {
     if (!value) return callback(new Error("请输入媒体标识"));
-    if (value.length > 20) callback(new Error("媒体标识不得超过20字"));
+
     else return callback();
 };
-const validateEmail = (rule: any, value: any, callback: any) => {
-    if (!value) return callback(new Error("请输入邮箱"));
-    const regexp =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!regexp.test(value)) callback(new Error("请输入正常的邮箱号"));
-    else return callback();
-};
-const validatePass = (rule: any, value: any, callback: any) => {
-    if (route.query.type === "modify") return callback();
-    if (!value) return callback(new Error("请输入密码"));
-    const regexp = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/;
-    if (!regexp.test(value)) callback(new Error("密码必须包含字母和数字，且在6~20位之间"));
-    else return callback();
-};
-const validateRole = (rule: any, value: any, callback: any) => {
-    // if (route.query.type === "modify") return callback();
-    if (!value || (Array.isArray(value) && !value.length)) return callback(new Error("请至少选择一个已上架手机"));
-    else return callback();
-};
-const validateDept = (rule: any, value: any, callback: any) => {
-    if (!value) return callback(new Error("请至少选择一个部门"));
+const validatepurchasingQuantity = (rule: any, value: any, callback: any) => {
+    if (!value) return callback(new Error("请输入买量的量级"));
+
     else return callback();
 };
 
-const userFormRules = reactive<FormRules>({
-    userName: [{ validator: validateUserName, trigger: "blur" }],
-    nickName: [{ validator: validateNickName, trigger: "blur" }],
-    email: [{ validator: validateEmail, trigger: "blur" }],
-    password: [{ validator: validatePass, trigger: "blur" }],
-    roleIdList: [{ validator: validateRole, trigger: "change" }],
-    deptId: [{ validator: validateDept, trigger: "change" }],
+
+
+
+const IdentityFormRules = reactive<FormRules>({
+    mediaName: [{ validator: validatemediaName, trigger: "blur" }],
+    mediaIdentity: [{ validator: validatemediaIdentity, trigger: "blur" }],
+    purchasingQuantity: [{ validator: validatepurchasingQuantity, trigger: "blur" }],
+
+
 });
 
-getRoleListApi().then((res) => {
-    let roleNameList = ["管理员", "项目负责人", "编导", "摄像", "剪辑", "运营"];
-    // OptionalRoleList.value = res.data.list.filter((role: any) => roleNameList.includes(role.name)).reverse();
-    OptionalRoleList.value = res.data.list
-        .filter((role: any) => roleNameList.includes(role.name))
-        .sort((a: any, b: any) => a.id - b.id);
-});
-getDeptTreeApi({ id: 8 }).then((res) => {
-    OptionalDeptList.value = res.data[0].childrenList;
-});
 
-const accountStore = useAccountStore();
-const cancleModifyUser = () => {
-    console.log("cancleModifyUser", userForm);
+
+
+const IdentityStore = useIdentityStore();
+const cancleModifyIdentity = () => {
+    console.log("cancleModifyIdentity", IdentityForm);
     router.back();
 };
-const saveModifyUser = async (formEl: FormInstance | undefined) => {
-    console.log("saveModifyUser", formEl);
-    if (route.query.type !== "modify") {
-        // 添加人员
+
+const beforeSubmit = () => {
+
+    if (IdentityForm.adsPageShow === '其它') {
+        IdentityForm.adsPage = IdentityForm.adsPageOther
+    } else {
+        IdentityForm.adsPage = IdentityForm.adsPageShow
+    }
+
+
+}
+const saveModifyIdentity = async (formEl: FormInstance | undefined) => {
+    console.log("saveModifyIdentity", formEl);
+    if (IdentityStore.behavior !== "modify") {
+        // 添加配置
         if (!formEl) return;
         await formEl.validate((valid, fields) => {
             if (valid) {
-                console.log("submit", userForm);
-                postCreateUserApi(userForm).then((res) => {
-                    console.log("postCreateUserApi", res);
+                console.log("submit", IdentityForm);
+
+
+                beforeSubmit();
+                editIdentityApi({
+                    action: 0,//新增
+                    ...IdentityForm
+                }).then((res) => {
+                    console.log("editIdentityApi", res);
                     if (res.code === 200) {
                         ElMessage.success("创建成功");
-                        router.push("/account/user");
+                        router.push("/mediaIdentityManagement");
+
                     }
                 });
             } else {
@@ -215,21 +204,19 @@ const saveModifyUser = async (formEl: FormInstance | undefined) => {
             }
         });
     } else {
-        // 修改人员
+        // 修改配置
         if (!formEl) return;
         await formEl.validate((valid, fields) => {
             if (valid) {
-                let { password, ...otherUserForm } = userForm; // eslint-disable-line
-                let updateUserParams = <any>{
-                    ...otherUserForm,
-                    userId: accountStore.userInfoGet.userId,
-                    enabled: accountStore.userInfoGet.enabled,
-                };
-                if (password) updateUserParams.password = password;
-                postUpdateUserApi(updateUserParams).then((res) => {
+
+                beforeSubmit();
+                editIdentityApi({
+                    action: 1,//编辑修改
+                    ...IdentityForm
+                }).then((res) => {
                     if (res.code === 200) {
                         ElMessage.success("修改成功");
-                        router.push("/account/user");
+                        router.push("/mediaIdentityManagement");
                     }
                 });
             } else {
@@ -240,14 +227,30 @@ const saveModifyUser = async (formEl: FormInstance | undefined) => {
 };
 
 onMounted(() => {
-    if (route.query.type === "modify") {
-        const { userName, nickName, email, roleList, deptId } = accountStore.modifyUserInfo;
-        if (userName) userForm.userName = userName;
-        if (nickName) userForm.nickName = nickName;
-        if (email) userForm.email = email;
-        if (roleList) userForm.roleIdList = roleList.map((role) => role.roleId);
-        if (deptId) userForm.deptId = deptId;
+    if (IdentityStore.behavior === "modify") {
+        // debugger
+        IdentityForm = Object.assign(IdentityForm, IdentityStore.modifyIdentityInfo);
+        if (IdentityForm.adsPage) {
+
+            let flag = ['APP首屏', '网站首页', '频道二级页'].includes(IdentityForm.adsPage);
+            if (flag) {
+                IdentityForm.adsPageShow = IdentityForm.adsPage
+            } else {
+                IdentityForm.adsPageShow = '其它';
+                IdentityForm.adsPageOther = IdentityForm.adsPage
+            }
+        }
+        // debugger
+    } else {
+
     }
+    nextTick(() => {
+        MScheduleShow.value = true;
+        // nextTick(() => {
+        //   // debugger
+
+        // })
+    })
 });
 
 const back = () => {
@@ -314,6 +317,17 @@ const back = () => {
     flex: 1;
     display: flex;
     flex-direction: column;
+}
+
+:deep(.image-slot) {
+    width: 100%;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background: var(--el-fill-color-light);
+    color: var(--el-text-color-secondary);
+    font-size: 30px;
 }
 </style>
     

@@ -7,32 +7,31 @@
             <div class="filter-label">时间范围</div>
             <div class="" style="margin-right:12px">
 
-                <el-date-picker v-model="searchForm.companyId" type="datetimerange" range-separator="To"
-                    start-placeholder="Start date" end-placeholder="End date" />
+                <el-date-picker v-model="searchForm.twoDate" type="datetimerange" range-separator="To"
+                    start-placeholder="开始时间" end-placeholder="结束时间" />
             </div>
             <div class="filter-label">选择手机品牌</div>
-            <el-select v-model="searchForm.companyId" class="filter-input">
-                <el-option label="启用" :value="1"></el-option>
-                <el-option label="停用" :value="0"></el-option>
+            <el-select v-model="searchForm.brand" class="filter-input">
+                <el-option v-for="item in brandListOption" :label="item.label" :value="item.value"></el-option>
+
             </el-select>
             <div class="filter-label">选择快应用</div>
-            <el-select v-model="searchForm.companyId" class="filter-input">
-                <el-option label="启用" :value="1"></el-option>
-                <el-option label="停用" :value="0"></el-option>
+            <el-select v-model="searchForm.appId" class="filter-input">
+                <el-option v-for="item in brandListOption" :label="item.label" :value="item.value"></el-option>
             </el-select>
-            <el-button type="primary">查询</el-button>
+            <el-button type="primary" v-throttle="() => resetPageToOne()">查询</el-button>
         </el-row>
         <el-config-provider :locale="zhCn">
             <el-table :data="tableDataList" class="table"
                 :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
                 <!-- height="600" -->
                 <el-table-column label="序号" width="100" prop="remoteAdvertiserId"></el-table-column>
-                <el-table-column label="用户识别码（如手机IMEI号）" prop="remoteAdvertiserName"></el-table-column>
-                <el-table-column label="用户所在地区" prop="company.companyName"></el-table-column>
-                <el-table-column label="用户手机品牌" prop="company.companyName"></el-table-column>
-                <el-table-column label="来源快应用" prop="company.companyName"></el-table-column>
-                <el-table-column label="用户反馈时间" prop="company.companyName"></el-table-column>
-                <el-table-column label="用户反馈内容" prop="company.companyName"></el-table-column>
+                <el-table-column label="用户识别码（如手机IMEI号）" prop="uid"></el-table-column>
+                <el-table-column label="用户所在地区" prop="area"></el-table-column>
+                <el-table-column label="用户手机品牌" prop="brand"></el-table-column>
+                <el-table-column label="来源快应用" prop="appName"></el-table-column>
+                <el-table-column label="用户反馈时间" prop="ts"></el-table-column>
+                <el-table-column label="用户反馈内容" prop="complian"></el-table-column>
 
 
 
@@ -45,184 +44,71 @@
 </template>
     
 <script setup lang="ts">
+import moment from 'moment';
+import { Picture as IconPicture } from '@element-plus/icons-vue'
 import { ref, reactive, computed, watch } from "vue";
 import { EditPen, Warning } from "@element-plus/icons-vue";
 import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import {
-    getAdvertiserListAddedApi,
-    getCompanyListApi,
-    getAuthUrlApi,
-    postOpenMaterialSyncApi,
-    postCloseAdvertiserApi,
-} from "@/api/biz/material";
+    getFeedbackListApi,
+} from "@/api/biz/feedback";
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";
-import { getMaterialSidebarListApi } from "@/api/biz/material";
+import { before } from 'lodash';
+import useListPageHook from '@/hook/listPage'
 
 
 const route = useRoute();
 const router = useRouter();
 
-const appType = computed(() => {
-    if (route.path.includes("toutiao")) return 1;
-    if (route.path.includes("qianchuan")) return 2;
-    if (route.path.includes("kuaishou")) return 3; // 应用类型，巨量引擎（头条）：1 巨量千川（千川）：2 磁力引擎（快手）：3 磁力金牛：4
-    return -1;
-});
-const mediaCategory = computed(() => {
-    if (route.path.includes("toutiao")) return 1;
-    // if (route.path.includes("qianchuan")) return 2;
-    if (route.path.includes("kuaishou")) return 4; // 1-头条; 2-百度; 3-广点通; 4-快手
-    return -1;
-});
-onBeforeRouteLeave(() => {
-    // console.log(route.path);
-    companyList.value = [];
-    searchForm.companyId = "";
-});
-// 切换侧边栏标签时会触发 watch 生命周期钩子
-watch(
-    () => route.name,
-    (newVal, oldVal) => {
-        // console.log(oldVal, "->", newVal, appType.value);
-        if (appType.value !== -1) {
-            let params = {
-                pageNum: 1,
-                pageSize: 50,
-                appType: appType.value,
-                // companyId: 8,
-                // accountNameOrId: "",
-            };
-            getAdvertiserListAddedApi(params).then((res) => {
-                tableDataList.value = res.data.list;
-                pageParams.total = res.data.total;
-            });
-        }
-    }
-);
 
+/* 查询区 */
 const searchForm = reactive({
-    accountNameOrId: "",
-    companyId: "",
-});
-const companyList = ref<any>([]);
-getCompanyListApi({ mediaCategory: mediaCategory.value }).then((res) => {
-    companyList.value = res.data.list;
-});
-
-
-
-
-/**
- * 账户首页表格区
- */
-const tableDataList = ref<any>([]);
-const curAdvertiser = ref(); // 点击同步素材时当前行
-let params = {
-    pageNum: 1,
-    pageSize: 50,
-    appType: appType.value,
-    // companyId: 8,
-    // accountNameOrId: "",
-};
-getAdvertiserListAddedApi(params).then((res) => {
-    console.log("getAdvertiserListAddedApi", params);
-    tableDataList.value = res.data.list;
-    // debugger
-    tableDataList.value = [{ remoteAdvertiserId: '1' }]
-    tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-    tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-    tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-    tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-    tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-
-    //debugger
-    pageParams.total = res.data.total;
-});
-tableDataList.value = [{ remoteAdvertiserId: '1' }]
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-// 授权
-const handleAuthorization = () => {
-    getAuthUrlApi({ appType: appType.value }).then((res) => {
-        window.open(res.data.oauthUrl);
-    });
-};
-
-
-
-/**
- * 存储路径级联表单
- */
-const pathDialogVisible = ref(false);
-const pathDialogTitle = ref("");
-const showPathDialogRemark = ref(false);
-const cascaderPathOptions = ref<any>([]);
-const cascaderPathArr = ref<number[]>([]); // 级联表单路径
-const saveChangePath = () => {
-    if (cascaderPathArr.value && cascaderPathArr.value.length) {
-        pathDialogVisible.value = false;
-        // console.log("curAdvertiser", curAdvertiser.value.advertiserId);
-        // console.log("cascaderPathArr", cascaderPathArr.value[1]);
-        let params = {
-            advertiserId: curAdvertiser.value.advertiserId,
-            projectId: cascaderPathArr.value[1],
-        };
-        postOpenMaterialSyncApi(params).then((res) => {
-            console.log("postOpenMaterialSyncApi", res);
-            ElMessage.success("同步素材储存路径选择成功");
-            let params = <any>{
-                pageNum: 1,
-                pageSize: 50,
-                appType: appType.value,
-            };
-            if (searchForm.accountNameOrId) params.accountNameOrId = searchForm.accountNameOrId;
-            if (searchForm.companyId) params.companyId = searchForm.companyId;
-            getAdvertiserListAddedApi(params).then((re) => {
-                console.log("getAdvertiserListAddedApi", re);
-                tableDataList.value = re.data.list;
-                pageParams.total = re.data.total;
-            });
-        });
-    } else {
-        ElMessage.warning("未选择同步素材路径");
+    appId: <string>'',
+    brand: <string>'',
+    startTime: <string>'',
+    endTime: <string>'',
+    twoDate: <any>null,
+})
+const brandListOption = [
+    {
+        label: '全部',
+        value: ''
+    },
+    {
+        label: 'VIVO',
+        value: 'VIVO'
+    },
+    {
+        label: 'OPPO',
+        value: 'OPPO'
+    },
+    {
+        label: '小米',
+        value: '小米'
+    },
+    {
+        label: '华为',
+        value: '华为'
+    },
+]
+const beforeQuery = () => {
+    if (searchForm.twoDate) {
+        searchForm.startTime = moment(searchForm.twoDate[0]).valueOf() + '';
+        searchForm.endTime = moment(searchForm.twoDate[1]).valueOf() + '';
     }
-};
-const cancleChangePath = () => {
-    pathDialogVisible.value = false;
-    cascaderPathArr.value = [];
-};
-
-//跳转新增/编辑页
-const gotoEdit = () => {
-    router.push(`/operationSubjectConfigurationEdit?type=add`);
-
+    return {
+        ...searchForm,
+        twoDate: null,
+    }
 }
+let {
+    pageParams,
+    tableDataList,
+    handlePageChange,
+    resetPageToOne,
+} = useListPageHook(getFeedbackListApi, {}, beforeQuery);
 
-/**
- * 分页相关
- */
-const pageParams = reactive({
-    pageNum: 1,
-    pageSize: 50,
-    total: 200,
-});
-const handlePageChange = (pageNum: number) => {
-    console.log("handlePageChange", pageNum);
-    let params = {
-        pageNum: pageNum,
-        pageSize: pageParams.pageSize,
-        appType: appType.value,
-        // companyId: 8,
-        // accountNameOrId: "",
-    };
-    getAdvertiserListAddedApi(params).then((res) => {
-        tableDataList.value = res.data.list;
-        pageParams.total = res.data.total;
-    });
-};
+
 </script>
     
 <style scoped lang="scss">

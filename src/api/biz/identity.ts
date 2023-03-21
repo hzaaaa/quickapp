@@ -14,6 +14,7 @@ export const getIdentityListApi = (params: any) => {
  * 
  */
 export const getIdentityDetailsApi = (params: any) => {
+    // debugger
     return http.get<any>(PORTBiz + `/identity/getIdentityDetails`, params);
 };
 
@@ -28,6 +29,6 @@ export const editIdentityApi = (params: any) => {
  * @name 删除配置
  */
 export const deleteIdentityApi = (params: any) => {
-    return http.get<any>(PORTBiz + `/identity/deleteIdentity`, params);
+    return http.post<any>(PORTBiz + `/identity/deleteIdentity`, params);
 };
 
