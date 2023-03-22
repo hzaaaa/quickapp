@@ -8,16 +8,28 @@
                 <span>快应用【{{ '奇域小说' }}】运营数据汇总：</span>
             </el-header>
             <el-main>
-                <el-tabs @tab-click="resizeEcharts" v-model="activeTab" type="card" class="flex-1" style="min-width: 100px">
-                    <el-tab-pane label="1" :name="1">
+                <el-tabs @tab-click="resizeEcharts" v-model="activeTab" class="flex-1" style="min-width: 100px">
+                    <el-tab-pane label="今日数据" name="今日数据">
 
                         <div>日期：2023-04-21</div>
                         <echartsTable type="1" ref="ET1"></echartsTable>
 
                     </el-tab-pane>
-                    <el-tab-pane label="2" :name="2">
+                    <el-tab-pane label="昨日数据" name="昨日数据">
                         <div>日期：2023-04-22</div>
                         <echartsTable type="2" ref="ET2"></echartsTable>
+                    </el-tab-pane>
+                    <el-tab-pane label="最近七日数据" name="最近七日数据">
+                        <div>日期：2023-04-22</div>
+                        <!-- <echartsTable type="2" ref="ET2"></echartsTable> -->
+                    </el-tab-pane>
+                    <el-tab-pane label="最近一个月数据" name="最近一个月数据">
+                        <div>日期：2023-04-22</div>
+                        <!-- <echartsTable type="2" ref="ET2"></echartsTable> -->
+                    </el-tab-pane>
+                    <el-tab-pane label="自定义查询范围" name="自定义查询范围">
+                        <div>日期：2023-04-22</div>
+                        <!-- <echartsTable type="2" ref="ET2"></echartsTable> -->
                     </el-tab-pane>
                 </el-tabs>
                 <!-- <el-button-group>
@@ -59,7 +71,7 @@ const userForm = reactive({
     deptId: <null | number>null,
 });
 
-let activeTab = ref(1);
+let activeTab = ref('今日数据');
 let ET1 = ref<any>(null);
 let ET2 = ref<any>(null);
 

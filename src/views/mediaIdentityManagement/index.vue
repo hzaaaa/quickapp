@@ -3,10 +3,19 @@
 
 
 
-        <div class="">
+        <div class="head-row">
             <el-button plain type="primary" @click='gotoAdd'>
                 新增一个广告投放媒体
             </el-button>
+            <div class="filter-label">选择媒体标识状态</div>
+            <div class="" style="margin-right:12px">
+
+                <el-select v-model="searchForm.enabled" class="filter-input">
+                    <el-option v-for="item in enabledOption" :label="item.label" :value="item.value"></el-option>
+
+                </el-select>
+            </div>
+            <el-button type="primary" v-throttle="() => resetPageToOne()">查询</el-button>
         </div>
         <el-config-provider :locale="zhCn">
             <el-table :data="tableDataList" class="table"
@@ -36,12 +45,18 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="广告落地页位置或地址" prop="adsPage"></el-table-column>
+                <el-table-column label="当前状态" width="180px">
+                    <template #default="scope">
+                        <div v-if="scope.row.enabled === 1" style="color: #0a9714">可用</div>
+                        <div v-else-if="scope.row.enabled === 0" style="color: #d90000">停用</div>
+                    </template>
+                </el-table-column>
 
                 <el-table-column label="操作" width="200px">
                     <template #default="scope">
                         <el-button link type="primary" @click="gotoEdit(scope.row)" size="small">管理</el-button>
-                        <el-button link type="primary" @click="removeIdentity(scope.row)" size="small"
-                            style="color: #d90000">删除</el-button>
+                        <!-- <el-button link type="primary" @click="removeIdentity(scope.row)" size="small"
+                            style="color: #d90000">删除</el-button> -->
                     </template>
                 </el-table-column>
 
@@ -74,16 +89,36 @@ const route = useRoute();
 const router = useRouter();
 const IdentityStore = useIdentityStore();
 
+/* 查询区 */
+const searchForm = reactive({
+    enabled: <number | null>null,//是否启用. 0-未启用; 1-已启用
+
+})
+
 let {
     pageParams,
     tableDataList,
     handlePageChange,
     resetPageToOne
-} = useListPageHook(getIdentityListApi, {}, () => { });
+} = useListPageHook(getIdentityListApi, () => { return searchForm });
 
 
 
 
+const enabledOption = reactive([
+    {
+        label: '全部',
+        value: null,
+    },
+    {
+        label: '可用',
+        value: 1,
+    },
+    {
+        label: '停用',
+        value: 0,
+    },
+])
 
 
 
@@ -148,6 +183,17 @@ const removeIdentity = (row: any) => {
     height: 100%;
     display: flex;
     flex-direction: column;
+
+    .head-row {
+        display: flex;
+        align-items: center;
+
+        .filter-label {
+            margin-left: 30px;
+            flex: 1;
+            text-align: right;
+        }
+    }
 }
 
 // 搜索区

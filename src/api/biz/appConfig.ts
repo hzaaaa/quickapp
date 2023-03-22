@@ -45,6 +45,6 @@ export const editConfigApi = (params: any) => {
  * @name 删除配置
  */
 export const deleteConfigApi = (params: { configPid: number }) => {
-  return http.get<any>(PORTBiz + `/config/deleteConfig`, params);
+  return http.post<any>(PORTBiz + `/config/deleteConfig`, params);
 };
 

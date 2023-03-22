@@ -71,6 +71,12 @@
                         <el-input v-model="IdentityForm.remark" :rows="5" type="textarea" placeholder="请输入备注" />
 
                     </el-form-item>
+                    <el-form-item label="是否启用该媒体" prop="enabled">
+                        <el-radio-group v-model="IdentityForm.enabled" class="ml-4">
+                            <el-radio :label="1" size="large">启用</el-radio>
+                            <el-radio :label="0" size="large">停用</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
 
                 </el-form>
                 <el-row>
@@ -119,6 +125,7 @@ let IdentityForm = reactive({
     adsPageOther: <string>'',
     purchasingQuantity: <number | null>null,
     remark: <string>'',
+    enabled: <number>0,//是否启用. 0-未启用; 1-已启用
 
 });
 

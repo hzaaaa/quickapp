@@ -7,14 +7,24 @@
     <el-config-provider :locale="zhCn">
       <el-table :data="tableDataList" class="table" :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
         <!-- height="600" -->
-        <el-table-column label="序号" width="100" prop="remoteAdvertiserId"></el-table-column>
-        <el-table-column label="快应用名称" prop="remoteAdvertiserName"></el-table-column>
-        <el-table-column label="快应用包名" prop="company.companyName"></el-table-column>
-        <el-table-column label="所在公司主体" prop="company.companyName"></el-table-column>
-        <el-table-column label="今日吊起数/率" prop="company.companyName"></el-table-column>
-        <el-table-column label="昨日吊起数/率" prop="company.companyName"></el-table-column>
-        <el-table-column label="今日广告点击率" prop="company.companyName"></el-table-column>
-        <el-table-column label="昨日广告点击率" prop="company.companyName"></el-table-column>
+        <el-table-column label="序号" width="100" prop="appId"></el-table-column>
+        <el-table-column label="快应用名称" prop="appName"></el-table-column>
+        <el-table-column label="快应用包名" prop="packageName"></el-table-column>
+        <el-table-column label="所在公司主体" prop="companyAbbr"></el-table-column>
+        <el-table-column label="今日吊起数/率">
+          <template #default="scope">
+            {{ scope.row.todayRequestDeepLinks }} / {{ scope.row.todayDeepLinkRatio }}
+
+          </template>
+        </el-table-column>
+        <el-table-column label="昨日吊起数/率">
+          <template #default="scope">
+            {{ scope.row.yesterdayRequestDeepLinks }} / {{ scope.row.yesterdayDeepLinkRatio }}
+
+          </template>
+        </el-table-column>
+        <el-table-column label="今日广告点击率" prop="yesterdayAdClickRatio"></el-table-column>
+        <el-table-column label="昨日广告点击率" prop="todayAdClickRatio"></el-table-column>
 
         <!-- <el-table-column label="状态" width="180px">
             <template #default="scope">
@@ -44,81 +54,50 @@ import { ref, reactive, computed, watch } from "vue";
 import { EditPen, Warning } from "@element-plus/icons-vue";
 import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import {
-  getCompanyListApi,
-  getCompanyDetailsApi,
-
-
-} from "@/api/biz/company";
+  getRecordListApi,
+  getRecordDetailApi
+} from "@/api/biz/launchData";
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";
+import { useCompanyStore } from "@/store/company";
 
+import useListPageHook from '@/hook/listPage'
 
 
 const route = useRoute();
 const router = useRouter();
+const CompanyStore = useCompanyStore();
 
 
-/**
- * 表格区
- */
-const tableDataList = ref<any>([]);
-let params = {
-  pageNum: 1,
-  pageSize: 50,
+let {
+  pageParams,
+  tableDataList,
+  handlePageChange
+} = useListPageHook(getRecordListApi, () => { });
 
-};
-const getTableList = () => {
-  getCompanyListApi(params).then((res) => {
-    console.log("getCompanyListApi", params);
-    tableDataList.value = res.data.list;
-
-    pageParams.total = res.data.total;
-  });
-}
-getTableList();
-tableDataList.value = [{ remoteAdvertiserId: '1' }]
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-
-
-
-
-
-//跳转新增/编辑页
 
 const gotoDetail = () => {
-
   router.push(`/viewLaunchDataDetail`);
 }
+//跳转新增/编辑页
+
+// const gotoAdd = () => {
+//     CompanyStore.setBehavior("add");
+//     router.push(`/operationSubjectConfigurationEdit`);
+// }
+// const gotoEdit = (row: any) => {
+//     CompanyStore.setBehavior("modify");
+//     getCompanyDetailsApi({
+//         companyId: row.companyId
+//     }).then(res => {
+//         console.log('res', res)
+//         CompanyStore.setCompanyInfo(row);
+//         router.push(`/operationSubjectConfigurationEdit`);
+//     })
 
 
+// }
 
 
-
-
-/**
- * 分页相关
- */
-const pageParams = reactive({
-  pageNum: 1,
-  pageSize: 50,
-  total: 200,
-});
-const handlePageChange = (pageNum: number) => {
-  console.log("handlePageChange", pageNum);
-  let params = {
-    pageNum: pageNum,
-    pageSize: pageParams.pageSize,
-
-
-  };
-  getCompanyListApi(params).then((res: any) => {
-    tableDataList.value = res.data.list;
-    pageParams.total = res.data.total;
-  });
-};
 </script>
   
 <style scoped lang="scss">

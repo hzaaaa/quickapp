@@ -7,11 +7,11 @@
                 <div class="number">137890</div>
             </div>
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">请求吊起数</div>
                 <div class="number">137890</div>
             </div>
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">吊起率</div>
                 <div class="number">137890</div>
             </div>
 
@@ -38,15 +38,15 @@
         </div>
         <div class="row">
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">广告呈现数</div>
                 <div class="number">137890</div>
             </div>
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">请求广告数</div>
                 <div class="number">137890</div>
             </div>
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">呈现率</div>
                 <div class="number">137890</div>
             </div>
 
@@ -73,11 +73,11 @@
         </div>
         <div class="row">
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">广告点击数</div>
                 <div class="number">137890</div>
             </div>
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">广告点击率</div>
                 <div class="number">137890</div>
             </div>
 
@@ -110,11 +110,11 @@
 
         <div class="row">
             <div class="col1 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">返回/退出按钮点击数</div>
                 <div class="number">137890</div>
             </div>
             <div class="col4 col">
-                <div class="title">实际吊起数</div>
+                <div class="title">快应用首页进入次数</div>
                 <div class="number">137890</div>
             </div>
         </div>
@@ -125,8 +125,11 @@
             </div>
             <div class="col1 col ">
                 <el-button-group>
-                    <el-button :type="activeTab === 1 ? 'primary' : ''" plain @click="activeTab = 1">1</el-button>
-                    <el-button :type="activeTab === 2 ? 'primary' : ''" plain @click="activeTab = 2">2</el-button>
+                    <el-button :type="activeTab === 1 ? 'primary' : ''" plain @click="activeTab = 1">全部手机品牌</el-button>
+                    <el-button :type="activeTab === 2 ? 'primary' : ''" plain @click="activeTab = 2">VIVO</el-button>
+                    <el-button :type="activeTab === 3 ? 'primary' : ''" plain @click="activeTab = 3">OPPO</el-button>
+                    <el-button :type="activeTab === 4 ? 'primary' : ''" plain @click="activeTab = 4">华为</el-button>
+                    <el-button :type="activeTab === 5 ? 'primary' : ''" plain @click="activeTab = 5">小米</el-button>
                 </el-button-group>
 
                 <div class="">{{ activeTab }}</div>

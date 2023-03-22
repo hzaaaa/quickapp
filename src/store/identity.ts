@@ -23,6 +23,7 @@ export const useIdentityStore = defineStore({
             adsPageOther: <string>'',
             purchasingQuantity: <number | null>null,
             remark: <string>'',
+            enabled: <number>0,//是否启用. 0-未启用; 1-已启用
 
 
         },

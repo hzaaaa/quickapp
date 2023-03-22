@@ -62,10 +62,10 @@ export const useAppConfigStore = defineStore({
 
                 this.modifyAppConfigInfo.advertiseTimeB.split(',').forEach(item => {
                     let a = item.split('-');
-                    let o = {
-                        value1: a[0] ? (new Date().setTime(Number(a[0]))) : null,
-                        value2: a[1] ? (new Date().setTime(Number(a[1]))) : null,
-                    }
+                    let o = [
+                        a[0] ? (new Date().setTime(Number(a[0]))) : null,
+                        a[1] ? (new Date().setTime(Number(a[1]))) : null,
+                    ]
                     // debugger
                     this.modifyAppConfigInfo.advertiseTimeBList.push(o);
 

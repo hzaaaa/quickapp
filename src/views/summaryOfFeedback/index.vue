@@ -106,7 +106,7 @@ let {
     tableDataList,
     handlePageChange,
     resetPageToOne,
-} = useListPageHook(getFeedbackListApi, {}, beforeQuery);
+} = useListPageHook(getFeedbackListApi, beforeQuery);
 
 
 </script>

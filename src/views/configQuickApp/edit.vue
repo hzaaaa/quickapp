@@ -42,7 +42,7 @@
           <el-form-item label="关联的投放媒体标识" prop="mediaIdentityList">
             <el-select multiple collapse-tags collapse-tags-tooltip v-model="AppConfigForm.mediaIdentityList"
               placeholder="请选择" style="width: 300px">
-              <el-option v-for="item in identityOptionalList" :key="item.identityId" :label="item.identityName"
+              <el-option v-for="item in identityOptionalList" :key="item.identityId" :label="item.mediaName"
                 :value="item.identityId"></el-option>
             </el-select>
           </el-form-item>
@@ -60,9 +60,11 @@
               <div class="" style="margin-top: 8px;">B. 自定义投放时间:</div>
               <div class="date-input">
 
-                <el-date-picker v-model="dateInput.value1" type="datetime" placeholder="" />
+                <!-- <el-date-picker v-model="dateInput.value1" type="datetime" placeholder="" />
                 至
-                <el-date-picker style="margin-left: 20px;" v-model="dateInput.value2" type="datetime" placeholder="" />
+                <el-date-picker style="margin-left: 20px;" v-model="dateInput.value2" type="datetime" placeholder="" /> -->
+                <el-date-picker @change="addDate" v-model="dateInput" type="datetimerange" range-separator="To"
+                  start-placeholder="开始时间" end-placeholder="结束时间" />
                 <el-icon color="#409EFC" @click="addDate" :size="20">
                   <CirclePlus />
                 </el-icon>
@@ -74,11 +76,11 @@
                 <div class="date-item" v-for="(dateItem, index) in AppConfigForm.advertiseTimeBList">
                   <div class="number" @click='editDate(index)'>
                     <div class="number1">
-                      {{ dateItem.value1 === null ? '' : moment(dateItem.value1).format('YYYY-MM-DD HH:mm:ss') }}
+                      {{ dateItem[0] === null ? '' : moment(dateItem[0]).format('YYYY-MM-DD HH:mm:ss') }}
                     </div>
-                    -
-                    <div class="number2" style="margin-left: 8px;">
-                      {{ dateItem.value2 === null ? '' : moment(dateItem.value2).format(`YYYY-MM-DD HH:mm:ss`) }}
+                    <div class="center">-</div>
+                    <div class="number2">
+                      {{ dateItem[1] === null ? '' : moment(dateItem[1]).format(`YYYY-MM-DD HH:mm:ss`) }}
                     </div>
 
                   </div>
@@ -224,17 +226,11 @@ const MScheduleShow = ref(false)
 
 
 //时间B相关逻辑
-let dateInput = reactive({
-  value1: <Date | null>null,
-  value2: <Date | null>null,
-})
+let dateInput = ref(<any>null)
 const addDate = () => {
-  if (dateInput.value1 || dateInput.value2) {//点击编辑时有时间存在强其添加进列表中
-    AppConfigForm.advertiseTimeBList.push(dateInput)
-    dateInput = reactive({
-      value1: <Date | null>null,
-      value2: <Date | null>null,
-    })
+  if (dateInput.value) {//点击编辑时有时间存在将其添加进列表中
+    AppConfigForm.advertiseTimeBList.push(dateInput.value)
+    dateInput = ref(<any>null)
   }
   // console.log(AppConfigForm.advertiseTimeBList);
   // AppConfigForm.advertiseTimeA = '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001111111111000000000000000000000000000000000000001111111111000000000000000000000000000000000000001111111111000000000000000000000000000000000000000000000000000000000000000000000000000000000';
@@ -244,7 +240,7 @@ const addDate = () => {
 const editDate = (index: number) => {
   //点击编辑时有时间存在将其添加进列表中
   addDate();
-  dateInput = (AppConfigForm.advertiseTimeBList.splice(index, 1))[0];
+  dateInput.value = (AppConfigForm.advertiseTimeBList.splice(index, 1))[0];
 }
 const removeDate = (index: number) => {
   AppConfigForm.advertiseTimeBList.splice(index, 1)
@@ -285,14 +281,7 @@ let companyOptionalList = ref<any>([]);
 let identityOptionalList = ref<any>([]);
 let cityOptionalList = ref<any>([]);
 
-companyOptionalList = ref<any>([{
-  companyId: 1,
-  companyName: 1,
-}]);
-identityOptionalList = ref<any>([{
-  identityId: 1,
-  identityName: 1,
-}]);
+
 
 const validateappName = (rule: any, value: string, callback: any) => {
   // debugger
@@ -300,12 +289,12 @@ const validateappName = (rule: any, value: string, callback: any) => {
 
   if (!value) return callback(new Error("请输入快应用名称"));
   // debugger
-  if (value.length > 20) callback(new Error("快应用名称不得超过20字"));
+  // if (value.length > 20) callback(new Error("快应用名称不得超过20字"));
   else return callback();
 };
 const validatepackageName = (rule: any, value: any, callback: any) => {
   if (!value) return callback(new Error("请输入快应用包名"));
-  if (value.length > 20) callback(new Error("快应用包名不得超过20字"));
+  // if (value.length > 20) callback(new Error("快应用包名不得超过20字"));
   else return callback();
 };
 const validatecompanyId = (rule: any, value: any, callback: any) => {
@@ -344,10 +333,10 @@ const AppConfigFormRules = reactive<FormRules>({
 
 
 getCompanySelectorsApi({}).then((res) => {
-  companyOptionalList.value = res.data.list;
+  companyOptionalList.value = res.data;
 });
 getIdentitySelectorsApi({}).then((res) => {
-  identityOptionalList.value = res.data.list;
+  identityOptionalList.value = res.data;
 });
 getCitySelectorsApi({}).then((res) => {
   cityOptionalList.value = res.data.list;
@@ -372,12 +361,12 @@ const beforeSubmit = () => {
   let strList = <string[]>[];
   AppConfigForm.advertiseTimeBList.forEach(item => {
     let str = '';
-    if (item.value1) {
-      str += moment(item.value1).valueOf()
+    if (item[0]) {
+      str += moment(item[0]).valueOf()
     }
     str += '-';
-    if (item.value2) {
-      str += moment(item.value2).valueOf()
+    if (item[1]) {
+      str += moment(item[1]).valueOf()
     }
     strList.push(str);
   });
@@ -466,7 +455,7 @@ const back = () => {
 
 .date-show {
   margin-top: 5px;
-  padding: 5px;
+  padding: 5px 0;
   height: 120px;
   border: 1px solid #f2f2f2;
   overflow: auto;
@@ -480,10 +469,17 @@ const back = () => {
       width: 0;
       display: flex;
       align-items: center;
+      padding: 0 24px;
 
       .number1,
       .number2 {
-        width: 150px;
+        width: 41%;
+        text-align: center;
+      }
+
+      .center {
+        flex: 1;
+        text-align: center;
       }
     }
 
@@ -492,7 +488,7 @@ const back = () => {
     }
 
     .el-icon {
-      margin-left: 5px;
+      // margin-left: 5px;
     }
   }
 }

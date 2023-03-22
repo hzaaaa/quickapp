@@ -17,7 +17,7 @@
         <el-table-column label="所在公司主体" prop="companyName"></el-table-column>
         <el-table-column label="状态" width="180px">
           <template #default="scope">
-            <div v-if="scope.row.enabled === true">正在使用</div>
+            <div v-if="scope.row.enabled === true" style="color: #0a9714">正在使用</div>
             <div v-else style="color: #d90000">停用</div>
           </template>
         </el-table-column>
@@ -49,7 +49,7 @@ import {
 } from "@/api/biz/appConfig";
 import zhCn from "element-plus/dist/locale/zh-cn.mjs";
 import { useAppConfigStore } from "@/store/appConfig";
-
+import useListPageHook from '@/hook/listPage'
 
 const route = useRoute();
 const router = useRouter();
@@ -59,67 +59,13 @@ const AppConfigStore = useAppConfigStore();
 
 
 
+let {
+  pageParams,
+  tableDataList,
+  handlePageChange,
+  resetPageToOne,
+} = useListPageHook(getConfigListApi, () => { });
 
-
-
-/**
- * 账户首页表格区
- */
-/**
- * 分页相关
- */
-const pageParams = reactive({
-  pageNum: 1,
-  pageSize: 50,
-  total: 213,
-});
-const handlePageChange = (pageNum: number) => {
-  console.log("handlePageChange", pageNum);
-  let params = {
-    pageNum: pageNum,
-    pageSize: pageParams.pageSize,
-  };
-  getConfigListApi(params).then((res: any) => {
-    tableDataList.value = res.data.list;
-    pageParams.total = res.data.total;
-  });
-};
-const tableDataList = ref<any>([]);
-
-let params = {
-  pageNum: 1,
-  pageSize: 50,
-};
-
-const getTableList = () => {
-  getConfigListApi(params).then((res) => {
-    console.log("getConfigListApi", params);
-    tableDataList.value = res.data.list;
-
-    pageParams.total = res.data.total;
-  });
-}
-getTableList();
-// getConfigListApi(params).then((res: any) => {
-//   console.log("getConfigListApi", params);
-//   tableDataList.value = res.data.list;
-//   // debugger
-//   tableDataList.value = [{ configPid: '1' }]
-//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-//   tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-
-//   //debugger
-//   pageParams.total = res.data.total;
-// });
-tableDataList.value = [{ configPid: '1' }]
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
-tableDataList.value = [...tableDataList.value, ...tableDataList.value];
 
 
 
@@ -160,7 +106,7 @@ const gotoEdit = (row: any) => {
 
 
     advertiseTimeA: "000000000000000001111111111111110000000000000000000000000000000001111111111111110000000000000000000000000000000001111111111111110000000000000000000001111111111001111111111111110000000000000000000001111111111001111111111111110000000000000000000001111111111001111111111111110000000000000000000000000000000000000000000000000000000000000000",
-    advertiseTimeB: "1680105600000-,-1680019200000,1679414400000-1679932800000",
+    advertiseTimeB: "1680105600000-1680019200000,1679414400000-1680019200000,1679414400000-1679932800000",
 
 
     enabled: 1,//是否启用. 0-未启用; 1-已启用
@@ -178,7 +124,7 @@ const gotoEdit = (row: any) => {
 const removeConfig = (row: any) => {
 
   console.log("removeConfig", row);
-  ElMessageBox.confirm(`此操作将删除${row.id}的配置，是否继续？`, "提示", {
+  ElMessageBox.confirm(`此操作将删除${row.appName}的配置，是否继续？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
@@ -186,14 +132,15 @@ const removeConfig = (row: any) => {
     .then(() => {
 
       let params = {
-        configPid: row.configPid
+        action: 1,
+        configPid: row.configPid,
       };
       // console.log("params", params);
       deleteConfigApi(params).then((res) => {
         console.log("postUpdateUserApi", res);
         if (res.msg === 'success') {
           ElMessage.success('删除配置成功');
-          getTableList();
+          resetPageToOne();
         } else {
           ElMessage.error(res.msg);
         }

@@ -18,7 +18,7 @@
                 <el-table-column label="公司标识" prop="companyIdentity"></el-table-column>
                 <el-table-column label="可用状态" width="180px">
                     <template #default="scope">
-                        <div v-if="scope.row.enabled === 1">正在使用</div>
+                        <div v-if="scope.row.enabled === 1" style="color: #0a9714">正在使用</div>
                         <div v-else style="color: #d90000">停用</div>
                     </template>
                 </el-table-column>
@@ -64,7 +64,7 @@ let {
     pageParams,
     tableDataList,
     handlePageChange
-} = useListPageHook(getCompanyListApi, {}, () => { });
+} = useListPageHook(getCompanyListApi, () => { });
 
 
 //跳转新增/编辑页
