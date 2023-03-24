@@ -17,7 +17,7 @@
             </el-select>
             <div class="filter-label">选择快应用</div>
             <el-select v-model="searchForm.appId" class="filter-input">
-                <el-option v-for="item in brandListOption" :label="item.label" :value="item.value"></el-option>
+                <el-option v-for="item in appListOption" :label="item.appName" :value="item.id + ''"></el-option>
             </el-select>
             <el-button type="primary" v-throttle="() => resetPageToOne()">查询</el-button>
         </el-row>
@@ -25,13 +25,18 @@
             <el-table :data="tableDataList" class="table"
                 :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
                 <!-- height="600" -->
-                <el-table-column label="序号" width="100" prop="remoteAdvertiserId"></el-table-column>
-                <el-table-column label="用户识别码（如手机IMEI号）" prop="uid"></el-table-column>
-                <el-table-column label="用户所在地区" prop="area"></el-table-column>
-                <el-table-column label="用户手机品牌" prop="brand"></el-table-column>
-                <el-table-column label="来源快应用" prop="appName"></el-table-column>
-                <el-table-column label="用户反馈时间" prop="ts"></el-table-column>
-                <el-table-column label="用户反馈内容" prop="complian"></el-table-column>
+                <el-table-column label="序号" width="100" prop="id"></el-table-column>
+                <el-table-column label="用户识别码（如手机IMEI号）" prop="uid" align="center"></el-table-column>
+                <el-table-column label="用户所在地区" prop="areaName" align="center"></el-table-column>
+                <el-table-column label="用户手机品牌" prop="brand" align="center"></el-table-column>
+                <el-table-column label="来源快应用" prop="quickAppInfo.appName" align="center"></el-table-column>
+                <el-table-column label="用户反馈时间" align="center">
+                    <template #default="scope">
+                        {{ moment(scope.row.ts, "YYYYMMDDHHmmss").format('YYYY-MM-DD HH:mm:ss') }}
+
+                    </template>
+                </el-table-column>
+                <el-table-column label="用户反馈内容" prop="complain" show-overflow-tooltip></el-table-column>
 
 
 
@@ -46,9 +51,12 @@
 <script setup lang="ts">
 import moment from 'moment';
 import { Picture as IconPicture } from '@element-plus/icons-vue'
-import { ref, reactive, computed, watch } from "vue";
+import { ref, reactive, computed, watch, onMounted } from "vue";
 import { EditPen, Warning } from "@element-plus/icons-vue";
 import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
+import {
+    getSearchListApi
+} from "@/api/biz/appConfig";
 import {
     getFeedbackListApi,
 } from "@/api/biz/feedback";
@@ -63,11 +71,19 @@ const router = useRouter();
 
 /* 查询区 */
 const searchForm = reactive({
-    appId: <string>'',
-    brand: <string>'',
+    appId: <any>'',
+    brand: <any>'',
     startTime: <string>'',
     endTime: <string>'',
     twoDate: <any>null,
+})
+let appListOption = <any>ref([]);
+getSearchListApi({}).then(res => {
+    // debugger
+    appListOption.value = [{
+        appName: '全部',
+        id: '',
+    }, ...res.data]
 })
 const brandListOption = [
     {
@@ -76,25 +92,43 @@ const brandListOption = [
     },
     {
         label: 'VIVO',
-        value: 'VIVO'
+        value: 'vivo'
     },
     {
         label: 'OPPO',
-        value: 'OPPO'
+        value: 'oppo'
     },
     {
         label: '小米',
-        value: '小米'
+        value: 'xiaomi'
     },
     {
         label: '华为',
-        value: '华为'
+        value: 'huawei'
     },
 ]
+let brandObj = {
+    'total': '',
+    'vivo': 'VIVO',
+    'oppo': 'OPPO',
+    'huawei': '华为',
+    'xiaomi': '小米',
+}
+let { appId, startTime, endTime, brand } = route.query;
+
+if (appId) {
+    searchForm.appId = route.query.appId;
+    searchForm.brand = brandObj[brand + ''];
+    searchForm.twoDate = [moment(startTime + ''), moment(endTime + '')];
+}
+
 const beforeQuery = () => {
     if (searchForm.twoDate) {
-        searchForm.startTime = moment(searchForm.twoDate[0]).valueOf() + '';
-        searchForm.endTime = moment(searchForm.twoDate[1]).valueOf() + '';
+        searchForm.startTime = moment(searchForm.twoDate[0]).format('YYYY-MM-DD HH:mm:ss');
+        searchForm.endTime = moment(searchForm.twoDate[1]).format('YYYY-MM-DD HH:mm:ss');
+    } else {
+        searchForm.startTime = '';
+        searchForm.endTime = '';
     }
     return {
         ...searchForm,
@@ -108,6 +142,7 @@ let {
     resetPageToOne,
 } = useListPageHook(getFeedbackListApi, beforeQuery);
 
+// debugger
 
 </script>
     

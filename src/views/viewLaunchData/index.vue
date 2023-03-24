@@ -11,20 +11,20 @@
         <el-table-column label="快应用名称" prop="appName"></el-table-column>
         <el-table-column label="快应用包名" prop="packageName"></el-table-column>
         <el-table-column label="所在公司主体" prop="companyAbbr"></el-table-column>
-        <el-table-column label="今日吊起数/率">
+        <el-table-column label="今日吊起数/率" align="center">
           <template #default="scope">
-            {{ scope.row.todayRequestDeepLinks }} / {{ scope.row.todayDeepLinkRatio }}
+            {{ scope.row.todayActualDeepLinks }} / {{ scope.row.todayDeepLinkRatio }}
 
           </template>
         </el-table-column>
-        <el-table-column label="昨日吊起数/率">
+        <el-table-column label="昨日吊起数/率" align="center">
           <template #default="scope">
-            {{ scope.row.yesterdayRequestDeepLinks }} / {{ scope.row.yesterdayDeepLinkRatio }}
+            {{ scope.row.yesterdayActualDeepLinks }} / {{ scope.row.yesterdayDeepLinkRatio }}
 
           </template>
         </el-table-column>
-        <el-table-column label="今日广告点击率" prop="yesterdayAdClickRatio"></el-table-column>
-        <el-table-column label="昨日广告点击率" prop="todayAdClickRatio"></el-table-column>
+        <el-table-column label="今日广告点击率" prop="yesterdayAdClickRatio" align="center"></el-table-column>
+        <el-table-column label="昨日广告点击率" prop="todayAdClickRatio" align="center"></el-table-column>
 
         <!-- <el-table-column label="状态" width="180px">
             <template #default="scope">
@@ -34,7 +34,7 @@
           </el-table-column> -->
         <el-table-column label="操作">
           <template #default="scope">
-            <el-button link type="primary" @click="gotoDetail()" size="small">查看详情</el-button>
+            <el-button link type="primary" @click="gotoDetail(scope.row)" size="small">查看详情</el-button>
 
           </template>
         </el-table-column>
@@ -75,8 +75,8 @@ let {
 } = useListPageHook(getRecordListApi, () => { });
 
 
-const gotoDetail = () => {
-  router.push(`/viewLaunchDataDetail`);
+const gotoDetail = (row: any) => {
+  router.push(`/viewLaunchDataDetail?appId=${row.appId}`);
 }
 //跳转新增/编辑页
 

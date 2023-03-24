@@ -9,8 +9,8 @@ export const useAppConfigStore = defineStore({
         behavior: "",
         // 添加、修改AppConfig时的对应AppConfig信息
         modifyAppConfigInfo: {
-            configId: <number>-1,
-            configPid: <number>-1,
+
+            configPid: <number | null>null,
             appName: <string>"",
             packageName: <string>"",
             companyId: <number | null>null,
@@ -35,7 +35,7 @@ export const useAppConfigStore = defineStore({
             mediaIdentityList: <any[]>[],
             mediaIdentityIds: <string>'',
             excludeAdvertiseCityList: <any[]>[],
-            excludeCityIds: <string>'',
+            excludeAdvertiseCityIds: <string>'',
         },
 
     }),
@@ -71,7 +71,11 @@ export const useAppConfigStore = defineStore({
 
                 });
             }
-            this.modifyAppConfigInfo.mediaIdentityList = this.modifyAppConfigInfo.mediaIdentityIds.split(',');
+            this.modifyAppConfigInfo.mediaIdentityList = this.modifyAppConfigInfo.mediaIdentityIds.split(',').map(item => Number(item));
+            // debugger
+            this.modifyAppConfigInfo.excludeAdvertiseCityList = this.modifyAppConfigInfo.excludeAdvertiseCityIds.split(',');
+            // debugger
+            // console.log('query', this.modifyAppConfigInfo.excludeAdvertiseCityIds)
 
 
 

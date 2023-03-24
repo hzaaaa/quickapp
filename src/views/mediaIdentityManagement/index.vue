@@ -91,7 +91,7 @@ const IdentityStore = useIdentityStore();
 
 /* 查询区 */
 const searchForm = reactive({
-    enabled: <number | null>null,//是否启用. 0-未启用; 1-已启用
+    enabled: <number | ''>'',//是否启用. 0-未启用; 1-已启用
 
 })
 
@@ -108,7 +108,7 @@ let {
 const enabledOption = reactive([
     {
         label: '全部',
-        value: null,
+        value: '',
     },
     {
         label: '可用',

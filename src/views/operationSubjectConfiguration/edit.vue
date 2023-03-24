@@ -42,7 +42,7 @@
                 </el-form>
                 <el-row>
                     <el-button @click="cancleModifyCompany">取消</el-button>
-                    <el-button type="primary" @click="saveModifyCompany(CompanyFormRef)">确定</el-button>
+                    <el-button type="primary" v-throttle="() => saveModifyCompany(CompanyFormRef)">确定</el-button>
                 </el-row>
             </el-main>
         </el-container>

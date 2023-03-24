@@ -13,7 +13,7 @@ export const getConfigListApi = (params: any) => {
  * @name 获取配置列表详情
  * @param configId 当前激活配置的子 ID
  */
-export const getConfigDetailsApi = (params: { configPid: number }) => {
+export const getConfigDetailsApi = (params: any) => {
   return http.get<any>(PORTBiz + `/config/getConfigDetails`, params);
 };
 
@@ -27,6 +27,7 @@ export const getCompanySelectorsApi = (params: any) => {
  * @name 加载媒体标识下拉框
  */
 export const getIdentitySelectorsApi = (params: any) => {
+  // debugger
   return http.get<any>(PORTBiz + `/config/getIdentitySelectors`, params);
 };
 /**
@@ -44,7 +45,13 @@ export const editConfigApi = (params: any) => {
 /**
  * @name 删除配置
  */
-export const deleteConfigApi = (params: { configPid: number }) => {
+export const deleteConfigApi = (params: any) => {
   return http.post<any>(PORTBiz + `/config/deleteConfig`, params);
+};
+/**
+ * @name 获取快应用搜索列表
+ */
+export const getSearchListApi = (params: any) => {
+  return http.get<any>(PORTBiz + `/config/getSearchList`, params);
 };
 

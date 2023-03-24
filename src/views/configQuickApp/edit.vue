@@ -47,7 +47,9 @@
             </el-select>
           </el-form-item>
           <el-form-item label="以下城市不投放" prop="excludeAdvertiseCityList">
-            <!-- <el-cascader :options="cityOptionalList" :props="props" collapse-tags clearable></el-cascader> -->
+
+            <el-cascader style="width: 300px" collapse-tags collapse-tags-tooltip :options="cityOptionalList"
+              v-model="AppConfigForm.excludeAdvertiseCityList" placeholder="请选择" :props="props" clearable />
           </el-form-item>
 
 
@@ -107,7 +109,7 @@
         </el-form>
         <el-row>
           <el-button @click="cancleModifyAppConfig">取消</el-button>
-          <el-button type="primary" @click="saveModifyAppConfig(AppConfigFormRef)">确定</el-button>
+          <el-button type="primary" v-throttle="() => saveModifyAppConfig(AppConfigFormRef)">确定</el-button>
         </el-row>
       </el-main>
     </el-container>
@@ -143,8 +145,8 @@ const route = useRoute();
 
 const AppConfigFormRef = ref<FormInstance>();
 let AppConfigForm = reactive({
-  configId: <number>-1,
-  configPid: <number>-1,
+
+  configPid: <number | null>null,
   appName: <string>"",
   packageName: <string>"",
   companyId: <number | null>null,
@@ -169,58 +171,14 @@ let AppConfigForm = reactive({
   mediaIdentityList: <any[]>[],
   mediaIdentityIds: <string>'',
   excludeAdvertiseCityList: <any[]>[],
-  excludeCityIds: <string>'',
+  excludeAdvertiseCityIds: <string>'',
+
+
 
 });
 
-const props = reactive({ multiple: true });
-const options = reactive([{
-  value: 1,
-  label: '东南',
-  children: [{
-    value: 2,
-    label: '上海',
-    children: [
-      { value: 3, label: '普陀' },
-      { value: 4, label: '黄埔' },
-      { value: 5, label: '徐汇' }
-    ]
-  }, {
-    value: 7,
-    label: '江苏',
-    children: [
-      { value: 8, label: '南京' },
-      { value: 9, label: '苏州' },
-      { value: 10, label: '无锡' }
-    ]
-  }, {
-    value: 12,
-    label: '浙江',
-    children: [
-      { value: 13, label: '杭州' },
-      { value: 14, label: '宁波' },
-      { value: 15, label: '嘉兴' }
-    ]
-  }]
-}, {
-  value: 17,
-  label: '西北',
-  children: [{
-    value: 18,
-    label: '陕西',
-    children: [
-      { value: 19, label: '西安' },
-      { value: 20, label: '延安' }
-    ]
-  }, {
-    value: 21,
-    label: '新疆维吾尔族自治区',
-    children: [
-      { value: 22, label: '乌鲁木齐' },
-      { value: 23, label: '克拉玛依' }
-    ]
-  }]
-}])
+
+
 
 const MScheduleShow = ref(false)
 
@@ -280,7 +238,7 @@ const phoneList = ref<any>(['VIVO', 'OPPO', '小米', '华为']);
 let companyOptionalList = ref<any>([]);
 let identityOptionalList = ref<any>([]);
 let cityOptionalList = ref<any>([]);
-
+const props = reactive({ multiple: true, children: 'citys', label: 'name', value: 'code' });
 
 
 const validateappName = (rule: any, value: string, callback: any) => {
@@ -327,19 +285,41 @@ const AppConfigFormRules = reactive<FormRules>({
   activatedBrandList: [{ validator: validateAppConfigParamArray1('已开通广告的手机'), trigger: "change" }],
   operatedBrandList: [{ validator: validateAppConfigParamArray2('启动运营的手机'), trigger: "change" }],
   mediaIdentityList: [{ validator: validateAppConfigParamArray2('关联的投放媒体标识'), trigger: "change" }],
-  excludeAdvertiseCityList: [{ validator: validateAppConfigParamArray1('以下城市不投放'), trigger: "change" }],
+  // excludeAdvertiseCityList: [{ validator: validateAppConfigParamArray1('以下城市不投放'), trigger: "change" }],
 
 });
 
 
 getCompanySelectorsApi({}).then((res) => {
+  // setTimeout(() => {
+
   companyOptionalList.value = res.data;
+  // }, 3000)
 });
 getIdentitySelectorsApi({}).then((res) => {
+  // setTimeout(() => {
   identityOptionalList.value = res.data;
+  // }, 3000)
 });
 getCitySelectorsApi({}).then((res) => {
-  cityOptionalList.value = res.data.list;
+  // setTimeout(() => {
+
+
+  res.data.forEach((provinceItem: any) => {
+    provinceItem.code = provinceItem.provinceCode;
+    provinceItem.name = provinceItem.provinceName;
+    provinceItem.citys.forEach((cityItem: any) => {
+      cityItem.name = cityItem.cityName;
+      cityItem.code = cityItem.cityCode;
+    })
+  })
+  cityOptionalList.value = res.data;
+  nextTick(() => {
+    // AppConfigForm.excludeAdvertiseCityList = [...AppConfigForm.excludeAdvertiseCityList];
+    // AppConfigForm.excludeAdvertiseCityList.concat();
+  })
+
+  // }, 3000)
 });
 
 const AppConfigStore = useAppConfigStore();
@@ -355,8 +335,20 @@ const beforeSubmit = () => {
 
   AppConfigForm.mediaIdentityIds = AppConfigForm.mediaIdentityList.toString();
   //城市
-  // AppConfigForm.excludeCityIds = AppConfigForm.excludeAdvertiseCityList.toString();
+  AppConfigForm.excludeAdvertiseCityIds = '';
+  let array = <any>[];
+  AppConfigForm.excludeAdvertiseCityList.forEach(array2 => {
+    if ((typeof array2) === 'string') {
+      array.push(array2);
+    } else {
+      array.push(array2[1]);
+    }
 
+  });
+  // debugger
+
+  AppConfigForm.excludeAdvertiseCityIds = array.toString();
+  // console.log('submit', AppConfigForm.excludeAdvertiseCityIds)
   //timeB
   let strList = <string[]>[];
   AppConfigForm.advertiseTimeBList.forEach(item => {
@@ -376,16 +368,18 @@ const beforeSubmit = () => {
 
 }
 const saveModifyAppConfig = async (formEl: FormInstance | undefined) => {
-  console.log("saveModifyAppConfig", formEl);
+  // console.log("saveModifyAppConfig", formEl);
   if (AppConfigStore.behavior !== "modify") {
     // 添加配置
     if (!formEl) return;
     await formEl.validate((valid, fields) => {
       if (valid) {
-        console.log("submit", AppConfigForm);
+        // console.log("submit", AppConfigForm);
 
 
         beforeSubmit();
+
+
         editConfigApi({
           action: 0,//新增
           ...AppConfigForm
@@ -407,6 +401,8 @@ const saveModifyAppConfig = async (formEl: FormInstance | undefined) => {
       if (valid) {
 
         beforeSubmit();
+
+
         editConfigApi({
           action: 1,//编辑修改
           ...AppConfigForm

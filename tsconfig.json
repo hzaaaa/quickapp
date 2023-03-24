@@ -1,6 +1,8 @@
 // tsconfig.json
 {
   "compilerOptions": {
+    "suppressImplicitAnyIndexErrors": true,
+
     "target": "ESNext", // 目标语言的版本
     "useDefineForClassFields": true, // class 声明中字段从 set 转为 define. ESNext 默认值
     "module": "ESNext", // 生成代码的模块标准. 还有 CommonJS 等

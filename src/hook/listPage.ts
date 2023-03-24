@@ -8,7 +8,7 @@ export default (getListApi: Function, beforeQuery: Function) => {
         total: 0,
     });
 
-    const tableDataList = ref<any>([{}]);
+    const tableDataList = ref<any>([]);
 
     const handlePageChange = (pageNum: number) => {
         let searchFormBack = (beforeQuery()) || {};
@@ -18,7 +18,8 @@ export default (getListApi: Function, beforeQuery: Function) => {
             ...searchFormBack
         };
         getListApi(params).then((res: any) => {
-            tableDataList.value = res.data.list;
+            // debugger
+            tableDataList.value = res?.data?.list || [];
             pageParams.total = res.data.total;
             pageParams.pageNum = pageNum;
         });
@@ -30,6 +31,7 @@ export default (getListApi: Function, beforeQuery: Function) => {
     };
     onMounted(() => {
         resetPageToOne();
+        // debugger
     })
     return {
         pageParams,

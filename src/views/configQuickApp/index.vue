@@ -17,8 +17,8 @@
         <el-table-column label="所在公司主体" prop="companyName"></el-table-column>
         <el-table-column label="状态" width="180px">
           <template #default="scope">
-            <div v-if="scope.row.enabled === true" style="color: #0a9714">正在使用</div>
-            <div v-else style="color: #d90000">停用</div>
+            <div v-if="scope.row.enabled === 1" style="color: #0a9714">正在使用</div>
+            <div v-else-if="scope.row.enabled === 0" style="color: #d90000">停用</div>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="240px">
@@ -78,46 +78,17 @@ const gotoAdd = () => {
 }
 const gotoEdit = (row: any) => {
   AppConfigStore.setBehavior("modify");
-  // getConfigDetailsApi({
-  //   configPid: row.configPid
-  // }).then(res => {
-  //   console.log('res', res)
-  //   AppConfigStore.setAppConfigInfo(row);
-  //   router.push(`/configQuickAppEdit`);
-  // })
 
-  //temp test 
-  // debugger
-  AppConfigStore.setAppConfigInfo({
-    configId: -1,
-    configPid: -1,
-    appName: "121",
-    packageName: "234",
-    companyId: 1,
-    // companyId: <number | null>null,
-
-    publishedBrand: "VIVO",
-
-    activatedBrand: "OPPO",
-
-    operatedBrand: "小米",
+  getConfigDetailsApi({
+    configId: row.configId
+  }).then(res => {
+    console.log('res', res)
+    delete res.data.configId;
+    AppConfigStore.setAppConfigInfo(res.data);
+    router.push(`/configQuickAppEdit`);
+  })
 
 
-
-
-    advertiseTimeA: "000000000000000001111111111111110000000000000000000000000000000001111111111111110000000000000000000000000000000001111111111111110000000000000000000001111111111001111111111111110000000000000000000001111111111001111111111111110000000000000000000001111111111001111111111111110000000000000000000000000000000000000000000000000000000000000000",
-    advertiseTimeB: "1680105600000-1680019200000,1679414400000-1680019200000,1679414400000-1679932800000",
-
-
-    enabled: 1,//是否启用. 0-未启用; 1-已启用
-    remark: '123',
-
-
-    mediaIdentityIds: '1',
-    excludeAdvertiseCityList: <any[]>[],
-    excludeCityIds: '',
-  });
-  router.push(`/configQuickAppEdit`);
 
 }
 
