@@ -34,8 +34,14 @@ export const useAppConfigStore = defineStore({
 
             mediaIdentityList: <any[]>[],
             mediaIdentityIds: <string>'',
-            excludeAdvertiseCityList: <any[]>[],
+            excludeAdvertiseHotCityList: <any[]>[],
+            excludeAdvertiseOtherCityList: <any[]>[],
             excludeAdvertiseCityIds: <string>'',
+
+            //禁用媒体标识相关
+            mediaIdentities: <any>[],
+            mediaIdentityDetailList: <any[]>[],
+
         },
 
     }),
@@ -71,9 +77,29 @@ export const useAppConfigStore = defineStore({
 
                 });
             }
-            this.modifyAppConfigInfo.mediaIdentityList = this.modifyAppConfigInfo.mediaIdentityIds.split(',').map(item => Number(item));
+
+
+
+            //媒体标识
+            this.modifyAppConfigInfo.mediaIdentityList = [];
+            this.modifyAppConfigInfo.mediaIdentityDetailList = [];
+
+
+
+
+            this.modifyAppConfigInfo.mediaIdentities.forEach((item: any) => {
+                if (item.enabled === 1) {
+                    this.modifyAppConfigInfo.mediaIdentityList.push(item.identityId);
+                    this.modifyAppConfigInfo.mediaIdentityDetailList.push(item);
+                }
+            })
+
+
+
             // debugger
-            this.modifyAppConfigInfo.excludeAdvertiseCityList = this.modifyAppConfigInfo.excludeAdvertiseCityIds.split(',');
+
+
+            this.modifyAppConfigInfo.excludeAdvertiseOtherCityList = this.modifyAppConfigInfo.excludeAdvertiseCityIds.split(',');
             // debugger
             // console.log('query', this.modifyAppConfigInfo.excludeAdvertiseCityIds)
 

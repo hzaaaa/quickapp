@@ -24,7 +24,11 @@
                 <el-table-column label="序号" width="100" prop="identityId"></el-table-column>
                 <el-table-column label="媒体名称" prop="mediaName"></el-table-column>
                 <el-table-column label="媒体标识" prop="mediaIdentity"></el-table-column>
-                <el-table-column label="买量的量级" prop="purchasingQuantity"></el-table-column>
+                <el-table-column label="买量的量级" prop="purchasingQuantity">
+                    <template #default="scope">
+                        {{ scope.row.purchasingQuantity }} PV/天
+                    </template>
+                </el-table-column>
                 <el-table-column label="广告素材图片链接" prop="adsLink">
                     <template #default="scope">
                         <el-popover effect="light" trigger="hover" placement="top" width="auto">

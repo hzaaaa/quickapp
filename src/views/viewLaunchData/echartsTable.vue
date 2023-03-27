@@ -16,7 +16,7 @@
             </div>
 
             <div class="col2 col echartsCol">
-                <div class="echartsClass" :id="`${props.type}myEcharts1`"></div>
+                <div class="echartsClass" :id="`${props.type}myEcharts1`" ref="myEcharts1Ref"></div>
                 <div class="btn-group">
                     <div class="btn">
                         <el-button @click="createZXT(myChartRow1, time, deepDataList, deepDataName)">折线图</el-button>
@@ -51,7 +51,7 @@
             </div>
 
             <div class="col2 col echartsCol">
-                <div class="echartsClass" :id="`${props.type}myEcharts2`"></div>
+                <div class="echartsClass" :id="`${props.type}myEcharts2`" ref="myEcharts2Ref"></div>
                 <div class="btn-group">
                     <div class="btn">
                         <el-button @click="createZXT(myChartRow3, time, clickDataList, clickDataName)">折线图</el-button>
@@ -83,7 +83,7 @@
 
 
             <div class="col3 col echartsCol">
-                <div class="echartsClass" :id="`${props.type}myEcharts3`"></div>
+                <div class="echartsClass" :id="`${props.type}myEcharts3`" ref="myEcharts3Ref"></div>
                 <div class="btn-group">
                     <div class="btn">
                         <el-button @click="createZXT(myChartRow3, time, clickDataList, clickDataName)">折线图</el-button>
@@ -401,6 +401,9 @@ defineExpose({
 let intoFullScreen = (myDom: any) => {
     myDom.requestFullscreen();
 }
+let myEcharts1Ref = ref(null);
+let myEcharts2Ref = ref(null);
+let myEcharts3Ref = ref(null);
 let myChartRow1: any = null;
 let myDomRow1: any = null;
 let myChartRow2: any = null;
@@ -409,18 +412,24 @@ let myChartRow3: any = null;
 let myDomRow3: any = null;
 let chartList: any = [];
 onMounted(() => {
+    myEcharts1Ref
+    // debugger
     // document.querySelector
-    myDomRow1 = document.getElementById(`${props.type}myEcharts1`);
+    // myDomRow1 = document.getElementById(`${props.type}myEcharts1`);
+    myDomRow1 = myEcharts1Ref.value;
+
     myChartRow1 = echarts.init(myDomRow1);
 
     addFullScreenResizeListener(myDomRow1, myChartRow1)
 
-    myDomRow2 = document.getElementById(`${props.type}myEcharts2`);
+    // myDomRow2 = document.getElementById(`${props.type}myEcharts2`);
+    myDomRow2 = myEcharts2Ref.value;
     myChartRow2 = echarts.init(myDomRow2);
 
     addFullScreenResizeListener(myDomRow2, myChartRow2)
 
-    myDomRow3 = document.getElementById(`${props.type}myEcharts3`);
+    // myDomRow3 = document.getElementById(`${props.type}myEcharts3`);
+    myDomRow3 = myEcharts3Ref.value;
     myChartRow3 = echarts.init(myDomRow3);
 
     addFullScreenResizeListener(myDomRow3, myChartRow3)

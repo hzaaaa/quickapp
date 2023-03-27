@@ -46,10 +46,13 @@
                 :value="item.identityId"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="以下城市不投放" prop="excludeAdvertiseCityList">
-
-            <el-cascader style="width: 300px" collapse-tags collapse-tags-tooltip :options="cityOptionalList"
-              v-model="AppConfigForm.excludeAdvertiseCityList" placeholder="请选择" :props="props" clearable />
+          <el-form-item label="以下城市不投放">
+            <el-checkbox-group v-model="AppConfigForm.excludeAdvertiseHotCityList" style="margin-right: 12px;">
+              <el-checkbox :label="city.code" v-for="city in hotCityList" :key="city.code">{{ city.name.substr(0, 2)
+              }}</el-checkbox>
+            </el-checkbox-group>
+            <el-cascader style="width: 300px;" collapse-tags collapse-tags-tooltip :options="cityOtherOptionalList"
+              v-model="AppConfigForm.excludeAdvertiseOtherCityList" placeholder="其它城市……" :props="props" clearable />
           </el-form-item>
 
 
@@ -170,9 +173,13 @@ let AppConfigForm = reactive({
 
   mediaIdentityList: <any[]>[],
   mediaIdentityIds: <string>'',
-  excludeAdvertiseCityList: <any[]>[],
+  excludeAdvertiseHotCityList: <any[]>[],
+  excludeAdvertiseOtherCityList: <any[]>[],
   excludeAdvertiseCityIds: <string>'',
 
+  //禁用媒体标识相关
+  mediaIdentities: <any>[],
+  mediaIdentityDetailList: <any[]>[],
 
 
 });
@@ -237,7 +244,8 @@ const onReceive = (value: any) => {
 const phoneList = ref<any>(['VIVO', 'OPPO', '小米', '华为']);
 let companyOptionalList = ref<any>([]);
 let identityOptionalList = ref<any>([]);
-let cityOptionalList = ref<any>([]);
+let cityOtherOptionalList = ref<any>([]);
+let hotCityList = ref<any>([]);
 const props = reactive({ multiple: true, children: 'citys', label: 'name', value: 'code' });
 
 
@@ -285,7 +293,7 @@ const AppConfigFormRules = reactive<FormRules>({
   activatedBrandList: [{ validator: validateAppConfigParamArray1('已开通广告的手机'), trigger: "change" }],
   operatedBrandList: [{ validator: validateAppConfigParamArray2('启动运营的手机'), trigger: "change" }],
   mediaIdentityList: [{ validator: validateAppConfigParamArray2('关联的投放媒体标识'), trigger: "change" }],
-  // excludeAdvertiseCityList: [{ validator: validateAppConfigParamArray1('以下城市不投放'), trigger: "change" }],
+
 
 });
 
@@ -298,28 +306,77 @@ getCompanySelectorsApi({}).then((res) => {
 });
 getIdentitySelectorsApi({}).then((res) => {
   // setTimeout(() => {
-  identityOptionalList.value = res.data;
+  identityOptionalList.value = [...res.data, ...AppConfigForm.mediaIdentityDetailList];
   // }, 3000)
 });
 getCitySelectorsApi({}).then((res) => {
   // setTimeout(() => {
 
-
+  let hotCityStrList = ['北京', '上海', '广州', '深圳', '杭州', '重庆'];
+  hotCityList.value = [];
+  cityOtherOptionalList.value = [];
   res.data.forEach((provinceItem: any) => {
-    provinceItem.code = provinceItem.provinceCode;
-    provinceItem.name = provinceItem.provinceName;
+    let provinceCitys = <any>[];
     provinceItem.citys.forEach((cityItem: any) => {
       cityItem.name = cityItem.cityName;
       cityItem.code = cityItem.cityCode;
+      let flag = false;
+      flag = hotCityStrList.includes(cityItem.name.substr(0, 2));
+      if (flag) {
+        hotCityList.value.push(cityItem);
+      } else {
+        provinceCitys.push(cityItem)
+      }
+
     })
-  })
-  cityOptionalList.value = res.data;
-  nextTick(() => {
-    // AppConfigForm.excludeAdvertiseCityList = [...AppConfigForm.excludeAdvertiseCityList];
-    // AppConfigForm.excludeAdvertiseCityList.concat();
+    provinceItem.citys = provinceCitys;
+
+    provinceItem.code = provinceItem.provinceCode;
+    provinceItem.name = provinceItem.provinceName;
+
+    let flag = false;
+    flag = hotCityStrList.includes(provinceItem.name.substr(0, 2));
+    if (!flag) {
+      cityOtherOptionalList.value.push(provinceItem)
+    }
   })
 
-  // }, 3000)
+
+  let citySortObj = {
+    '北京': 0, '上海': 1, '广州': 2, '深圳': 3, '杭州': 4, '重庆': 5,
+  }
+  hotCityList.value.sort((a: any, b: any) => {
+    return citySortObj[a.name.substr(0, 2)] - citySortObj[b.name.substr(0, 2)]
+
+  })
+
+
+  AppConfigForm.excludeAdvertiseHotCityList = [];
+  AppConfigForm.excludeAdvertiseOtherCityList = [];
+  if (AppConfigStore.behavior === "modify") {
+
+    //城市码
+    let strArr = AppConfigForm.excludeAdvertiseCityIds.split(',');
+    strArr.forEach((strItem: any) => {
+      let flag = false;
+
+      hotCityList.value.forEach((cityItem: any) => {
+        if (cityItem.code == strItem) {
+          flag = true;//hot
+          AppConfigForm.excludeAdvertiseHotCityList.push(strItem)
+        }
+      })
+      if (!flag) {
+        AppConfigForm.excludeAdvertiseOtherCityList.push(strItem)
+      }
+    })
+  } else {
+    //新增时默认前5勾选
+    for (let i = 0; i < 5; i++) {
+      AppConfigForm.excludeAdvertiseHotCityList.push(hotCityList.value[i].code)
+    }
+  }
+
 });
 
 const AppConfigStore = useAppConfigStore();
@@ -333,11 +390,18 @@ const beforeSubmit = () => {
   AppConfigForm.activatedBrand = AppConfigForm.activatedBrandList.toString();
   AppConfigForm.operatedBrand = AppConfigForm.operatedBrandList.toString();
 
+
+  // let tempList = AppConfigForm.mediaIdentityList.map((item: any) => {
+  //   return AppConfigForm.mediaIdentityRawMap[item + ''] || item;
+  // })
   AppConfigForm.mediaIdentityIds = AppConfigForm.mediaIdentityList.toString();
+  // debugger
   //城市
   AppConfigForm.excludeAdvertiseCityIds = '';
   let array = <any>[];
-  AppConfigForm.excludeAdvertiseCityList.forEach(array2 => {
+  array = [...AppConfigForm.excludeAdvertiseHotCityList];
+  // debugger
+  AppConfigForm.excludeAdvertiseOtherCityList.forEach(array2 => {
     if ((typeof array2) === 'string') {
       array.push(array2);
     } else {
@@ -375,7 +439,11 @@ const saveModifyAppConfig = async (formEl: FormInstance | undefined) => {
     await formEl.validate((valid, fields) => {
       if (valid) {
         // console.log("submit", AppConfigForm);
-
+        let include1 = AppConfigForm.advertiseTimeA.includes('1');
+        if (!include1) {
+          ElMessage.error('常规时间不能为空');
+          return
+        }
 
         beforeSubmit();
 

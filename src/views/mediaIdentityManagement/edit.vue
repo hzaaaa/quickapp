@@ -12,8 +12,7 @@
                     label-position="right">
                     <el-form-item label="媒体名称" prop="mediaName">
 
-                        <el-input :disabled="IdentityStore.behavior === 'modify'" v-model="IdentityForm.mediaName"
-                            placeholder="请输入媒体名称" style="width: 300px"></el-input>
+                        <el-input v-model="IdentityForm.mediaName" placeholder="请输入媒体名称" style="width: 300px"></el-input>
                     </el-form-item>
                     <el-form-item label="媒体标识" prop="mediaIdentity">
                         <el-input v-model="IdentityForm.mediaIdentity" placeholder="请输入媒体标识"
@@ -121,9 +120,9 @@ let IdentityForm = reactive({
     adsType: <number>0,//0-Banner;1-弹窗; 2-信息流; 3-开屏; 4-激励
     adsLink: <string>'',
     adsPage: <string>'',
-    adsPageShow: <string>'',
+    adsPageShow: <string>'APP首屏',
     adsPageOther: <string>'',
-    purchasingQuantity: <number | null>null,
+    purchasingQuantity: <number>1000000,
     remark: <string>'',
     enabled: <number>0,//是否启用. 0-未启用; 1-已启用
 
@@ -148,6 +147,11 @@ const validatemediaIdentity = (rule: any, value: any, callback: any) => {
 
     else return callback();
 };
+const validateadsLink = (rule: any, value: any, callback: any) => {
+    if (!value) return callback(new Error("广告素材链接"));
+
+    else return callback();
+};
 const validatepurchasingQuantity = (rule: any, value: any, callback: any) => {
     if (!value) return callback(new Error("请输入买量的量级"));
 
@@ -161,6 +165,7 @@ const IdentityFormRules = reactive<FormRules>({
     mediaName: [{ validator: validatemediaName, trigger: "blur" }],
     mediaIdentity: [{ validator: validatemediaIdentity, trigger: "blur" }],
     purchasingQuantity: [{ validator: validatepurchasingQuantity, trigger: "blur" }],
+    adsLink: [{ validator: validateadsLink, trigger: "blur" }],
 
 
 });

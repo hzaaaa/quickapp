@@ -12,8 +12,7 @@
                     label-position="right">
                     <el-form-item label="公司全称" prop="companyName">
 
-                        <el-input :disabled="CompanyStore.behavior === 'modify'" v-model="CompanyForm.companyName"
-                            placeholder="请输入公司全称" style="width: 300px"></el-input>
+                        <el-input v-model="CompanyForm.companyName" placeholder="请输入公司全称" style="width: 300px"></el-input>
                     </el-form-item>
                     <el-form-item label="公司简称" prop="companyAbbr">
                         <el-input v-model="CompanyForm.companyAbbr" placeholder="请输入公司简称" style="width: 300px"></el-input>
