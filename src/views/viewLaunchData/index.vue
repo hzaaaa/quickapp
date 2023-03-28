@@ -7,7 +7,7 @@
     <el-config-provider :locale="zhCn">
       <el-table :data="tableDataList" class="table" :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
         <!-- height="600" -->
-        <el-table-column label="序号" width="100" prop="appId"></el-table-column>
+        <el-table-column label="序号" sortable width="100" prop="appId"></el-table-column>
         <el-table-column label="快应用名称" prop="appName"></el-table-column>
         <el-table-column label="快应用包名" prop="packageName"></el-table-column>
         <el-table-column label="所在公司主体" prop="companyAbbr"></el-table-column>
@@ -34,7 +34,8 @@
           </el-table-column> -->
         <el-table-column label="操作">
           <template #default="scope">
-            <el-button link type="primary" @click="gotoDetail(scope.row)" size="small">查看详情</el-button>
+            <el-button link type="primary" @click="gotoDetail(scope.row)" size="small"
+              v-permission="['report:detail']">查看详情</el-button>
 
           </template>
         </el-table-column>

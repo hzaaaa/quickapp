@@ -4,7 +4,7 @@
         <!-- v-check="[handleAuthorization, ['media:kuaishou:add']]" -->
 
         <div class="">
-            <el-button plain type="primary" @click='gotoAdd'>
+            <el-button plain type="primary" @click='gotoAdd' v-permission="['company:edit']">
                 新增一个运营快应用的公司主体
             </el-button>
         </div>
@@ -12,11 +12,11 @@
             <el-table :data="tableDataList" class="table"
                 :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
                 <!-- height="600" -->
-                <el-table-column label="序号" width="100" prop="companyId"></el-table-column>
+                <el-table-column label="序号" sortable width="100" prop="companyId"></el-table-column>
                 <el-table-column label="公司全称" prop="companyName"></el-table-column>
                 <el-table-column label="公司简称" prop="companyAbbr"></el-table-column>
                 <el-table-column label="公司标识" prop="companyIdentity"></el-table-column>
-                <el-table-column label="可用状态" width="180px">
+                <el-table-column label="可用状态" prop="enabled" sortable width="180px">
                     <template #default="scope">
                         <div v-if="scope.row.enabled === 1" style="color: #0a9714">正在使用</div>
                         <div v-else style="color: #d90000">停用</div>
@@ -24,7 +24,8 @@
                 </el-table-column>
                 <el-table-column label="操作" width="240px">
                     <template #default="scope">
-                        <el-button link type="primary" @click="gotoEdit(scope.row)" size="small">管理</el-button>
+                        <el-button link type="primary" @click="gotoEdit(scope.row)" size="small"
+                            v-permission="['company:edit']">管理</el-button>
 
                     </template>
                 </el-table-column>

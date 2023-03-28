@@ -4,7 +4,7 @@
 
 
         <div class="head-row">
-            <el-button plain type="primary" @click='gotoAdd'>
+            <el-button plain type="primary" @click='gotoAdd' v-permission="['identity:edit']">
                 新增一个广告投放媒体
             </el-button>
             <div class="filter-label">选择媒体标识状态</div>
@@ -21,10 +21,10 @@
             <el-table :data="tableDataList" class="table"
                 :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
                 <!-- height="600" -->
-                <el-table-column label="序号" width="100" prop="identityId"></el-table-column>
+                <el-table-column label="序号" sortable width="100" prop="identityId"></el-table-column>
                 <el-table-column label="媒体名称" prop="mediaName"></el-table-column>
                 <el-table-column label="媒体标识" prop="mediaIdentity"></el-table-column>
-                <el-table-column label="买量的量级" prop="purchasingQuantity">
+                <el-table-column label="买量的量级" sortable prop="purchasingQuantity">
                     <template #default="scope">
                         {{ scope.row.purchasingQuantity }} PV/天
                     </template>
@@ -49,7 +49,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="广告落地页位置或地址" prop="adsPage"></el-table-column>
-                <el-table-column label="当前状态" width="180px">
+                <el-table-column label="当前状态" width="180px" sortable prop="enabled">
                     <template #default="scope">
                         <div v-if="scope.row.enabled === 1" style="color: #0a9714">可用</div>
                         <div v-else-if="scope.row.enabled === 0" style="color: #d90000">停用</div>
@@ -58,7 +58,8 @@
 
                 <el-table-column label="操作" width="200px">
                     <template #default="scope">
-                        <el-button link type="primary" @click="gotoEdit(scope.row)" size="small">管理</el-button>
+                        <el-button link type="primary" @click="gotoEdit(scope.row)" size="small"
+                            v-permission="['identity:edit']">管理</el-button>
                         <!-- <el-button link type="primary" @click="removeIdentity(scope.row)" size="small"
                             style="color: #d90000">删除</el-button> -->
                     </template>

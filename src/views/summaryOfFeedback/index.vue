@@ -25,12 +25,12 @@
             <el-table :data="tableDataList" class="table"
                 :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
                 <!-- height="600" -->
-                <el-table-column label="序号" width="100" prop="id"></el-table-column>
+                <el-table-column label="序号" width="100" prop="id" sortable></el-table-column>
                 <el-table-column label="用户识别码（如手机IMEI号）" prop="uid" align="center"></el-table-column>
                 <el-table-column label="用户所在地区" prop="areaName" align="center"></el-table-column>
                 <el-table-column label="用户手机品牌" prop="brand" align="center"></el-table-column>
                 <el-table-column label="来源快应用" prop="quickAppInfo.appName" align="center"></el-table-column>
-                <el-table-column label="用户反馈时间" align="center">
+                <el-table-column label="用户反馈时间" align="center" prop="ts" sortable>
                     <template #default="scope">
                         {{ moment(scope.row.ts, "YYYYMMDDHHmmss").format('YYYY-MM-DD HH:mm:ss') }}
 

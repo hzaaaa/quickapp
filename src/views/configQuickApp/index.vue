@@ -4,18 +4,18 @@
     <!-- v-check="[handleAuthorization, ['media:kuaishou:add']]" -->
 
     <div class="">
-      <el-button plain type="primary" @click='gotoAdd'>
+      <el-button plain type="primary" @click='gotoAdd' v-permission="['config:edit']">
         新增一个快应用的配置
       </el-button>
     </div>
     <el-config-provider :locale="zhCn">
       <el-table :data="tableDataList" class="table" :header-cell-style="{ backgroundColor: '#f2f2f2', fontSize: '14px' }">
         <!-- height="600" -->
-        <el-table-column label="序号" width="100" prop="configPid"></el-table-column>
+        <el-table-column label="序号" sortable width="100" prop="configPid"></el-table-column>
         <el-table-column label="快应用名称" prop="appName"></el-table-column>
         <el-table-column label="快应用包名" prop="packageName"></el-table-column>
         <el-table-column label="所在公司主体" prop="companyName"></el-table-column>
-        <el-table-column label="状态" width="180px">
+        <el-table-column label="状态" sortable prop="enabled" width="180px">
           <template #default="scope">
             <div v-if="scope.row.enabled === 1" style="color: #0a9714">正在使用</div>
             <div v-else-if="scope.row.enabled === 0" style="color: #d90000">停用</div>
@@ -23,8 +23,9 @@
         </el-table-column>
         <el-table-column label="操作" width="240px">
           <template #default="scope">
-            <el-button link type="primary" @click="gotoEdit(scope.row)" size="small">配置</el-button>
-            <el-button link type="primary" @click="removeConfig(scope.row)" size="small"
+            <el-button link type="primary" @click="gotoEdit(scope.row)" size="small"
+              v-permission="['config:edit']">配置</el-button>
+            <el-button link type="primary" @click="removeConfig(scope.row)" size="small" v-permission="['config:delete']"
               style="color: #d90000">删除</el-button>
           </template>
         </el-table-column>
