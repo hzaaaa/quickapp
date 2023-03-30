@@ -59,8 +59,18 @@ export const useAppConfigStore = defineStore({
             this.modifyAppConfigInfo = AppConfigInfo;
 
             this.modifyAppConfigInfo.publishedBrandList = this.modifyAppConfigInfo.publishedBrand.split(',');
+            if (!this.modifyAppConfigInfo.publishedBrand) {
+                this.modifyAppConfigInfo.publishedBrandList = [];
+            }
             this.modifyAppConfigInfo.activatedBrandList = this.modifyAppConfigInfo.activatedBrand.split(',');
+            if (!this.modifyAppConfigInfo.activatedBrand) {
+                this.modifyAppConfigInfo.activatedBrandList = [];
+            }
             this.modifyAppConfigInfo.operatedBrandList = this.modifyAppConfigInfo.operatedBrand.split(',');
+            if (!this.modifyAppConfigInfo.operatedBrand) {
+                this.modifyAppConfigInfo.operatedBrandList = [];
+            }
+            // debugger
 
             this.modifyAppConfigInfo.advertiseTimeBList = [];
 

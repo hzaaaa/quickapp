@@ -19,24 +19,28 @@
             <el-input v-model="AppConfigForm.packageName" placeholder="请输入快应用包名" style="width: 300px"></el-input>
           </el-form-item>
           <el-form-item label="所属公司主体" prop="companyId">
-            <el-select v-model="AppConfigForm.companyId" placeholder="请选择" style="width: 300px">
+            <el-select :disabled="AppConfigStore.behavior === 'modify'" v-model="AppConfigForm.companyId"
+              placeholder="请选择" style="width: 300px">
               <el-option v-for="d in companyOptionalList" :key="d.companyId" :label="d.companyName"
                 :value="d.companyId"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="已上架手机" prop="publishedBrandList">
             <el-checkbox-group v-model="AppConfigForm.publishedBrandList">
-              <el-checkbox :label="phone" v-for="phone in phoneList" :key="phone">{{ phone }}</el-checkbox>
+              <el-checkbox :label="phone.value" v-for="phone in phoneList" :key="phone.value">{{ phone.name
+              }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="已开通广告的手机" prop="activatedBrandList">
             <el-checkbox-group v-model="AppConfigForm.activatedBrandList">
-              <el-checkbox :label="phone" v-for="phone in phoneList" :key="phone">{{ phone }}</el-checkbox>
+              <el-checkbox :label="phone.value" v-for="phone in phoneList" :key="phone.value">{{ phone.name
+              }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="启动运营的手机" prop="operatedBrandList">
             <el-checkbox-group v-model="AppConfigForm.operatedBrandList">
-              <el-checkbox :label="phone" v-for="phone in phoneList" :key="phone">{{ phone }}</el-checkbox>
+              <el-checkbox :label="phone.value" v-for="phone in phoneList" :key="phone.value">{{ phone.name
+              }}</el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <el-form-item label="关联的投放媒体标识" prop="mediaIdentityList">
@@ -241,7 +245,25 @@ const onReceive = (value: any) => {
 
 
 
-const phoneList = ref<any>(['VIVO', 'OPPO', '小米', '华为']);
+// const phoneList = ref<any>(['VIVO', 'OPPO', '小米', '华为']);
+const phoneList = ref<any>([
+  {
+    name: 'VIVO',
+    value: 'vivo',
+  },
+  {
+    name: 'OPPO',
+    value: 'oppo',
+  },
+  {
+    name: '小米',
+    value: 'xiaomi',
+  },
+  {
+    name: '华为',
+    value: 'huawei',
+  },
+]);
 let companyOptionalList = ref<any>([]);
 let identityOptionalList = ref<any>([]);
 let cityOtherOptionalList = ref<any>([]);

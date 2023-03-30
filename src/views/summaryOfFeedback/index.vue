@@ -107,18 +107,13 @@ const brandListOption = [
         value: 'huawei'
     },
 ]
-let brandObj = {
-    'total': '',
-    'vivo': 'VIVO',
-    'oppo': 'OPPO',
-    'huawei': '华为',
-    'xiaomi': '小米',
-}
+
 let { appId, startTime, endTime, brand } = route.query;
 
 if (appId) {
     searchForm.appId = route.query.appId;
-    searchForm.brand = brandObj[brand + ''];
+
+    searchForm.brand = brand;
     searchForm.twoDate = [moment(startTime + ''), moment(endTime + '')];
 }
 
