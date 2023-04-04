@@ -101,9 +101,9 @@ const resetRedis = () => {
   redisResetApi().then(res => {
 
     if (res.code === 200) {
-      ElMessage.success("Redis 初始化/重置成功");
+      ElMessage.success(res.msg);
     } else {
-      ElMessage.error("Redis 初始化/重置失败");
+      ElMessage.error(res.msg);
     }
   })
 };
