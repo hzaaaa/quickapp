@@ -1,5 +1,6 @@
 import http from "@/api";
-import { PORTAuth } from "@/api/config/servicePort";
+
+import { PORTAuth, PORTBiz } from "@/api/config/servicePort";
 import { Login } from "@/api/interface";
 
 /**
@@ -28,4 +29,10 @@ export const getAuthButtonListApi = () => {
  */
 export const logoutApi = () => {
   return http.post(PORTAuth + `/auth/logout`);
+};
+/**
+ * @name  Redis 初始化/重置 
+ */
+export const redisResetApi = () => {
+  return http.get(PORTBiz + `/redis/redisReset`);
 };

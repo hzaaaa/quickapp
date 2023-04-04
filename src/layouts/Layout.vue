@@ -26,6 +26,8 @@
             <el-dropdown-menu>
               <el-dropdown-item disabled v-if="globalStore.email">{{ globalStore.email }}</el-dropdown-item>
               <el-dropdown-item divided @click="jumpToInfo">个人信息设置</el-dropdown-item>
+              <el-dropdown-item v-if="everyPermissionIsTrue(['redis:reset'])" @click="resetRedis">Redis 初始化/重置
+              </el-dropdown-item>
               <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -37,14 +39,14 @@
     <div class="body">
       <!-- 主体部分-左侧导航栏-->
       <!-- <aside class="aside"></aside>  -->
-      
+
       <!-- 主体部分-内容 -->
       <div class="container">
         <leftAside></leftAside>
         <div class="right-container">
-        <RouterView></RouterView>
-      </div>
-        
+          <RouterView></RouterView>
+        </div>
+
       </div>
     </div>
   </div>
@@ -53,14 +55,23 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import avatar from "@/assets/images/avatar.png";
-import { logoutApi } from "@/api/login/login";
+import { logoutApi, redisResetApi } from "@/api/login/login";
 import { useRoute, useRouter } from "vue-router";
 import { useGlobalStore } from "@/store";
 import { useAuthStore } from "@/store/auth";
 import { getFisrtRoute } from "@/utils/util";
 
+import { getCurrentInstance } from "vue";
+
+
+
 // import subLayout from './subLayout.vue'
 import leftAside from './leftAside.vue'
+
+
+const internalInstance = getCurrentInstance();
+const everyPermissionIsTrue =
+  internalInstance?.appContext.config.globalProperties.$everyPermissionIsTrue;
 
 const route = useRoute();
 const router = useRouter();
@@ -85,6 +96,17 @@ const changeMenu = (targetMenu: any, targetMenuIndex: number) => {
   router.push(getFisrtRoute(routes));
 };
 
+// Redis 初始化/重置 
+const resetRedis = () => {
+  redisResetApi().then(res => {
+
+    if (res.code === 200) {
+      ElMessage.success("Redis 初始化/重置成功");
+    } else {
+      ElMessage.error("Redis 初始化/重置失败");
+    }
+  })
+};
 /**
  * 顶部信息栏-用户信息
  */
@@ -109,7 +131,7 @@ const logout = () => {
       router.replace(path);
       ElMessage.success("退出登录成功！");
     })
-    .catch(() => {});
+    .catch(() => { });
 };
 </script>
 
@@ -120,31 +142,37 @@ const logout = () => {
   min-width: 1200px;
   height: 100%;
 }
+
 .header {
   display: flex;
   align-items: center;
   border-bottom: 4px #f2f2f2 solid;
   height: 60px;
+
   &-title {
     box-sizing: border-box;
     padding-left: 16px;
     width: 250px;
     font-size: 20px;
-    flex:1;
+    flex: 1;
   }
+
   &-directory {
     display: flex;
     flex: 1;
     padding-left: 40px;
+
     div {
       width: 120px;
       height: 60px;
       cursor: pointer;
       line-height: 60px;
       text-align: center;
+
       &.active {
         position: relative;
         color: var(--el-color-primary);
+
         &::before {
           position: absolute;
           left: 40px;
@@ -159,11 +187,14 @@ const logout = () => {
       }
     }
   }
+
   &-userinfo {
     margin-right: 40px;
+
     &-dropdown_title {
       display: flex;
       align-items: center;
+
       img {
         margin-right: 8px;
         width: 32px;
@@ -171,19 +202,22 @@ const logout = () => {
     }
   }
 }
+
 .body {
   overflow-y: auto;
   flex-grow: 1;
   width: 100%;
   height: 0;
   flex: 1;
+
   .container {
     display: flex;
     overflow-y: hidden;
     // flex-direction: column;
     width: 100%;
     height: 100%;
-    .right-container{
+
+    .right-container {
       padding: 12px;
       padding-bottom: 0;
       flex: 1;

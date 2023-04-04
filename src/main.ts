@@ -8,12 +8,27 @@ import router from "@/router/index";
 import pinia from "@/store/index";
 import directives from "@/directives/index";
 import { VideoCamera, Avatar } from "@element-plus/icons-vue";
+import { useAuthStore } from "@/store/auth";
 
 const app = createApp(App);
 
 app.use(router);
 app.use(pinia);
 app.use(directives);
+
+
+app.config.globalProperties.$everyPermissionIsTrue = (value: Array<string>) => {
+  const authStore = useAuthStore();
+  const authButtonList = authStore.authButtonListGet;
+  if (value && value instanceof Array && value.length) {
+    const hasPermission = value.every((p) => {
+      return authButtonList.includes(p);
+    });
+    return hasPermission;
+  } else {
+    throw new Error(`使用方式：v-permission="['library:project']"`);
+  }
+}
 
 app.mount("#app");
 
