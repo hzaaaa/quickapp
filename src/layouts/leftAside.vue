@@ -43,11 +43,7 @@ import { useAuthStore } from "@/store/auth";
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
-// const temp = () => {
-//   console.log("authMenuListGet", authStore.authMenuListGet);
-//   console.log("showMenuListGet", authStore.showMenuListGet);
-//   console.log("routerMenuListGet", authStore.routerMenuListGet);
-// };
+
 console.log("showMenuListGet", authStore.showMenuListGet);
 
 //构建菜单命中数组
@@ -107,26 +103,4 @@ const clickSubMenu = (menuItem: any) => {
 
 
 
-<!-- @open="handleOpen"
-      @close="handleClose" -->
-      
-      <!-- <el-menu-item index="2" @click="clickSubMenu">
-        <el-icon><Menu  /></el-icon>
-        <template #title>配置快应用</template>
-      </el-menu-item>
-      <el-menu-item index="3" >
-        <el-icon><document /></el-icon>
-        <template #title>查看投放数据</template>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <el-icon><setting /></el-icon>
-        <template #title>媒体标识管理</template>
-      </el-menu-item>
-      <el-menu-item index="5">
-        <el-icon><setting /></el-icon>
-        <template #title>运营主体配置 </template>
-      </el-menu-item>
-      <el-menu-item index="6">
-        <el-icon><setting /></el-icon>
-        <template #title>意见反馈汇总 </template>
-      </el-menu-item> -->
+

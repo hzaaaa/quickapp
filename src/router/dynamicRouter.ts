@@ -1,7 +1,7 @@
 import router from "@/router/index";
 import { useAuthStore } from "@/store/auth";
 import Layout from "@/layouts/Layout.vue";
-import subLayout from "@/layouts/subLayout.vue";
+
 
 // 引入 views 文件夹下所有 vue 文件
 const modules = import.meta.glob("@/views/**/*.vue");
@@ -13,8 +13,8 @@ export const initDynamicRouter = async () => {
   // 1. 获取筛选过的动态路由菜单列表，通过 filterAsyncRouter 处理成路由
   const authStore = useAuthStore();
   let dynamicRouter = filterAsyncRouter(JSON.parse(JSON.stringify(authStore.routerMenuListGet)));
-  
-  console.log('dynamicRouter',dynamicRouter)
+
+  console.log('dynamicRouter', dynamicRouter)
   // 2. 添加动态路由
   authStore.setAuthMenuList(dynamicRouter);
   dynamicRouter.forEach((item: any) => {
@@ -24,7 +24,7 @@ export const initDynamicRouter = async () => {
   // 3. 添加404页面路由，捕获所有未知路由
   router.addRoute({ path: "/:catchAll(.*)", redirect: "/404" });
 
-  
+
 };
 
 /**
@@ -35,45 +35,23 @@ export const initDynamicRouter = async () => {
 export const filterAsyncRouter = (menus: Menu.MenuOptions[]) => {
   let res: any = [];
   // 
-  let childList:any=[];
-  menus.forEach(item=>{
+  let childList: any = [];
+  menus.forEach(item => {
     item.childrenList?.forEach(element => {
       childList.push({
-        path:element.redirect||'',
-        component:modules["/src/views" + element.component + ".vue"],
+        path: element.redirect || '',
+        component: modules["/src/views" + element.component + ".vue"],
       })
     });
   })
-  let layoutRoute={
+  let layoutRoute = {
     path: "/",
     component: Layout,
     children: childList,
   }
   res.push(layoutRoute)
-  
+
   return res;
-  
+
 };
-//原代码
-// export const filterAsyncRouter = (menus: Menu.MenuOptions[]) => {
-//   let res: any = [];
-//   menus.forEach((menu: Menu.MenuOptions) => {
-//     let router: any = {};
-//     router.path = menu.redirect || "";
-//     if (menu.router) router.name = menu.router;
-//     if (menu.component) {
-//       if (menu.component === "Layout") {
-//         router.component = Layout;
-//       } else if (menu.component === "subLayout") {
-//         router.component = subLayout;
-//       } else {
-//         router.component = modules["/src/views" + menu.component + ".vue"];
-//       }
-//     }
-//     if (menu.childrenList && menu.childrenList.length) {
-//       router.children = filterAsyncRouter(menu.childrenList);
-//     }
-//     res.push(router);
-//   });
-//   return res;
-// };
+

@@ -128,6 +128,9 @@ let IdentityForm = reactive({
 
 });
 
+// for(let a of [1,2,3]){
+
+// }
 
 
 const MScheduleShow = ref(false)
@@ -166,7 +169,6 @@ const IdentityFormRules = reactive<FormRules>({
     mediaIdentity: [{ validator: validatemediaIdentity, trigger: "blur" }],
     purchasingQuantity: [{ validator: validatepurchasingQuantity, trigger: "blur" }],
     adsLink: [{ validator: validateadsLink, trigger: "blur" }],
-
 
 });
 
@@ -258,10 +260,7 @@ onMounted(() => {
     }
     nextTick(() => {
         MScheduleShow.value = true;
-        // nextTick(() => {
-        //   // debugger
 
-        // })
     })
 });
 

@@ -9,6 +9,7 @@ export function getRouterMenuList(menuList: Menu.MenuOptions[]) {
   let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置", "基础权限"];
   return newMenuList.filter((item) => {
     if (hiddenList.includes(item.title)) return false;
+
     if (item.component === "Layout" && !item.childrenList![0].component) {
       item.childrenList = flatMenuList(item.childrenList!);
       return true;
@@ -51,6 +52,7 @@ export function getShowMenuList(menuList: Menu.MenuOptions[]) {
   return newMenuList.filter((item) => {
     // 初始自带的几个设置菜单不显示在此系统中
     if (hiddenList.includes(item.title)) return false;
+    if (item.hidden === 1) return false;
     item.childrenList?.length && (item.childrenList = getShowMenuList(item.childrenList));
     return item.type <= 6;
   });
@@ -67,24 +69,13 @@ export function getRoleMenuList(menuList: Menu.MenuOptions[]) {
   let hiddenList = ["部门设置", "菜单设置", "角色设置", "用户设置", "基础权限"];
   return newMenuList.filter((item) => {
     if (hiddenList.includes(item.title)) return false;
+
     item.childrenList?.length && (item.childrenList = getRouterMenuList(item.childrenList));
     return item.hidden == 0;
   });
 }
 
-// /**
-//  * @description 扁平化数组对象(主要用来处理路由菜单)
-//  * @param {Array} menuList 所有菜单列表
-//  * @return array
-//  */
-// export function getFlatArr(menuList: Menu.MenuOptions[]) {
-//   let newMenuList: Menu.MenuOptions[] = JSON.parse(JSON.stringify(menuList));
-//   return newMenuList.reduce((pre: Menu.MenuOptions[], current: Menu.MenuOptions) => {
-//     let flatArr = [...pre, current];
-//     if (current.childrenList) flatArr = [...flatArr, ...getFlatArr(current.childrenList)];
-//     return flatArr;
-//   }, []);
-// }
+
 
 /**
  * @description 从路由列表中，找到第一个路由作为初始默认路由
