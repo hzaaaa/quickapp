@@ -28,11 +28,16 @@
                 <el-table-column label="序号" width="100" prop="id" sortable></el-table-column>
                 <el-table-column label="用户识别码（如手机IMEI号）" prop="uid" align="center"></el-table-column>
                 <el-table-column label="用户所在地区" prop="areaName" align="center"></el-table-column>
-                <el-table-column label="用户手机品牌" prop="brand" align="center"></el-table-column>
-                <el-table-column label="来源快应用" prop="quickAppInfo.appName" align="center"></el-table-column>
-                <el-table-column label="用户反馈时间" align="center" prop="ts" sortable>
+                <el-table-column label="用户手机品牌" prop="brand" align="center">
                     <template #default="scope">
-                        {{ moment(scope.row.ts, "YYYYMMDDHHmmss").format('YYYY-MM-DD HH:mm:ss') }}
+                        {{ findPhoneLabel(scope.row.brand) }}
+                    </template>
+                </el-table-column>
+                <el-table-column label="来源快应用" prop="quickAppInfo.appName" align="center"></el-table-column>
+                <el-table-column label="用户反馈时间" align="center" prop="createdAt" sortable>
+                    <template #default="scope">
+                        <!-- {{ moment(scope.row.ts, "YYYYMMDDHHmmss").format('YYYY-MM-DD HH:mm:ss') }} -->
+                        {{ scope.row.createdAt }}
 
                     </template>
                 </el-table-column>
@@ -107,6 +112,12 @@ const brandListOption = [
         value: 'huawei'
     },
 ]
+let findPhoneLabel = (value: any) => {
+    let obj = brandListOption.find(item => {
+        return item.value === value
+    })
+    return obj?.label;
+}
 
 let { appId, startTime, endTime, brand } = route.query;
 
