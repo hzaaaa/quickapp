@@ -11,9 +11,8 @@
         <el-form ref="AppConfigFormRef" :model="AppConfigForm" :rules="AppConfigFormRules" label-width="150px"
           label-position="right">
           <el-form-item label="快应用名称" prop="appName">
-
-            <el-input :disabled="AppConfigStore.behavior === 'modify'" v-model="AppConfigForm.appName"
-              placeholder="请输入快应用名称" style="width: 300px"></el-input>
+            <!-- :disabled="AppConfigStore.behavior === 'modify'" -->
+            <el-input v-model="AppConfigForm.appName" placeholder="请输入快应用名称" style="width: 300px"></el-input>
           </el-form-item>
           <el-form-item label="快应用包名" prop="packageName">
             <el-input v-model="AppConfigForm.packageName" placeholder="请输入快应用包名" style="width: 300px"></el-input>
