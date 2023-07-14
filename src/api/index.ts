@@ -8,8 +8,8 @@ declare const API_URL: string;
 // debugger
 const config = {
   // 默认地址请求地址，可在 .env 开头文件中修改
-  // baseURL: import.meta.env.VITE_API_URL,//开发时本地地址 ，打包时生产地址
-  baseURL: API_URL,//全局可配置的地址
+  baseURL: API_URL || import.meta.env.VITE_API_URL,//开发时本地地址 ，打包时生产地址
+  // baseURL: API_URL,//全局可配置的地址
   // 设置超时时间（10s）
   timeout: ResultEnum.TIMEOUT as number,
 };
